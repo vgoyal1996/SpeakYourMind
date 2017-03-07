@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "178323439355",
+    "firebase_url": "https://speakyourmind-d0d3a.firebaseio.com",
+    "project_id": "speakyourmind-d0d3a",
+    "storage_bucket": "speakyourmind-d0d3a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178323439355:android:0d6bdf579ae0ff9d",
+        "android_client_info": {
+          "package_name": "com.example.vipul.speakyourmind"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178323439355-ob43ajq90m2bdh1t5kbn5sge7rhrhc4e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHgw8pcHhsEH2YI5Fj54wNPGhjNGiPydk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

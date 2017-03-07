@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#212F3D"
+    tools:context="com.example.vipul.speakyourmind.UserProfileActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SPEAK YOUR MIND"
+        android:textSize="40sp"
+        android:textColor="#EB984E"
+        android:id="@+id/user_profile_heading_text"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="People should know you as"
+        android:layout_marginTop="50dp"
+        android:textSize="20sp"
+        android:id="@+id/user_profile_email_text"
+        android:textColor="@android:color/white"
+        android:layout_gravity="center_horizontal"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username here"
+        android:layout_marginTop="10dp"
+        android:textColor="@android:color/white"
+        android:id="@+id/user_profile_user_name"
+        android:inputType="textEmailAddress"
+        android:textColorHint="#ffffff"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set your profile pic"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:id="@+id/user_profile_pic_text"
+        android:textColor="@android:color/white"
+        android:layout_gravity="center_horizontal"/>
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/ic_photo_camera_black_72dp"
+        android:layout_marginTop="10dp"
+        android:adjustViewBounds="true"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitXY"
+        android:id="@+id/user_profile_pic"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update"
+            android:background="@drawable/button_borders"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:textSize="20sp"
+            android:id="@+id/user_profile_update_button"/>
+    </RelativeLayout>
+
+
+</LinearLayout>

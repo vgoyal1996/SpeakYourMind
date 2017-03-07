@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#212F3D"
+    tools:context="com.example.vipul.speakyourmind.SignUpActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SPEAK YOUR MIND"
+        android:textSize="40sp"
+        android:textColor="#EB984E"
+        android:id="@+id/sign_up_heading_text"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="40dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:id="@+id/sign_up_name"
+            android:layout_weight="1.5"
+            android:textColor="#ffffff"
+            android:layout_marginStart="10dp"
+            android:textSize="25sp"
+            android:layout_marginEnd="10dp"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="3"
+            android:drawableStart="@drawable/ic_face_white_18dp"
+            android:drawablePadding="12dp"
+            android:textSize="25sp"
+            android:paddingStart="8dp"
+            android:paddingEnd="12dp"
+            android:id="@+id/name_edit_text"
+            android:background="@drawable/background_edit_text"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:id="@+id/sign_up_email"
+            android:textColor="#ffffff"
+            android:layout_weight="1.5"
+            android:layout_marginStart="10dp"
+            android:textSize="25sp"
+            android:layout_marginEnd="10dp"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="3"
+            android:drawableStart="@drawable/ic_email_white_18dp"
+            android:drawablePadding="12dp"
+            android:paddingStart="8dp"
+            android:textSize="25sp"
+            android:paddingEnd="12dp"
+            android:inputType="textEmailAddress"
+            android:id="@+id/email_edit_text"
+            android:background="@drawable/background_edit_text"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:layout_weight="1.5"
+            android:layout_marginStart="10dp"
+            android:textSize="25sp"
+            android:id="@+id/sign_up_password"
+            android:textColor="#ffffff"
+            android:layout_marginEnd="10dp"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="3"
+            android:inputType="textPassword"
+            android:drawableStart="@drawable/ic_lock_white_18dp"
+            android:drawablePadding="12dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="12dp"
+            android:textSize="25sp"
+            android:id="@+id/password_edit_Text"
+            android:background="@drawable/background_edit_text"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Phone"
+            android:layout_weight="1.5"
+            android:textColor="#ffffff"
+            android:id="@+id/sign_up_phone"
+            android:layout_marginStart="10dp"
+            android:textSize="25sp"
+            android:layout_marginEnd="10dp"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="3"
+            android:drawableStart="@drawable/ic_call_end_white_18dp"
+            android:drawablePadding="12dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="12dp"
+            android:textSize="25sp"
+            android:inputType="phone"
+            android:id="@+id/phone_edit_text"
+            android:background="@drawable/background_edit_text"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Account"
+            android:background="@drawable/button_borders"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/create_account_button"/>
+    </RelativeLayout>
+
+
+</LinearLayout>
