@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,8 +24,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,6 +51,7 @@ public class MyUserHandleActivity extends AppCompatActivity {
     public static String UID;
     private Toolbar toolbar;
     private TabLayout tabLayout;
+    private FirebaseStorage storage;
     private ViewPager viewPager;
     private UserModel userModel;
     private ImageView icam;
@@ -62,22 +73,30 @@ public class MyUserHandleActivity extends AppCompatActivity {
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.action_bar_layout);
         TextView myText = (TextView)findViewById(R.id.mytext);
-        if(UID.equals(MainActivity.USER_UID))
-            myText.setText(MainActivity.CURRENT_USER);
-        else
-            myText.setText(userModel.getUserName());
         icam = (ImageView) findViewById(R.id.profile_photo);
-
+        storage = FirebaseStorage.getInstance();
+        if(UID.equals(MainActivity.USER_UID)) {
+            myText.setText(MainActivity.CURRENT_USER);
+            Uri uri = currUser.getCurrentUser().getPhotoUrl();
+            Glide.with(MyUserHandleActivity.this).load(uri).into(icam);
+        }
+        else {
+            myText.setText(userModel.getUserName());
+            StorageReference ref = storage.getReference().child(UID + "/" + userModel.getEmail() + ".jpg");
+            Glide.with(MyUserHandleActivity.this).using(new FirebaseImageLoader()).load(ref).into(icam);
+        }
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
+
         icam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectImage();
+                if(UID.equals(MainActivity.USER_UID))
+                    selectImage();
             }
         });
     }
@@ -162,6 +181,26 @@ public class MyUserHandleActivity extends AppCompatActivity {
                 bm.compress(Bitmap.CompressFormat.PNG, 100, bos);
                 finalImage = bos.toByteArray();
                 icam.setImageBitmap(bm);
+            }
+            if(finalImage!=null){
+                StorageReference ref = storage.getReference().child(UID+"/"+userModel.getEmail()+".jpg");
+                UploadTask uploadTask = ref.putBytes(finalImage);
+                final Uri[] downloadUrl = new Uri[1];
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Toast.makeText(MyUserHandleActivity.this,exception.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(MyUserHandleActivity.this,"Profile photo changed",Toast.LENGTH_SHORT).show();
+                        downloadUrl[0] = taskSnapshot.getDownloadUrl();
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setPhotoUri(downloadUrl[0]).build();
+                        currUser.getCurrentUser().updateProfile(profileUpdates);
+                    }
+                });
             }
         }
     }
