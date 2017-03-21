@@ -29,7 +29,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserProfileActivity"></activity>
+        <activity android:name=".UserProfileActivity" />
+        <activity android:name="com.tangxiaolv.telegramgallery.GalleryActivity" />
+        <activity
+            android:name=".TakePhotoActivity"
+            android:label="@string/title_activity_take_photo"
+            android:theme="@style/Theme.AppCompat.Dialog.Alert"/>
     </application>
 
 </manifest>

@@ -11,8 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,8 +33,10 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
     private Context context;
     private List<StatusModel>statusModels;
     private Map<String,UserModel> users;
+    private List<MessageKeyModel> messageKeys;
     private RecyclerViewItemClickListener listener;
     private CustomFilter filter;
+    private StorageReference reference;
     private static final String[] MONTH_NAMES = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     private static final String[] WEEK_DAYS = {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
 
@@ -43,6 +52,21 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
         this.context = context;
         this.statusModels = statusModels;
         this.users = users;
+    }
+
+    public StatusViewAdapter(Context context,List<StatusModel> statusModels, Map<String, UserModel> users, List<MessageKeyModel> messageKeys) {
+        this.context = context;
+        this.statusModels = statusModels;
+        this.users = users;
+        this.messageKeys = messageKeys;
+    }
+
+    public List<MessageKeyModel> getMessageKeys() {
+        return messageKeys;
+    }
+
+    public void setMessageKeys(List<MessageKeyModel> messageKeys) {
+        this.messageKeys = messageKeys;
     }
 
     public void setStatusModels(List<StatusModel> statusModels) {
@@ -69,11 +93,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
 
     @Override
     public void onBindViewHolder(final StatusViewAdapter.StatusViewHolder holder, int position) {
-        //final CardView cardView = holder.cardView;
-        //RelativeLayout relativeLayout_card = (RelativeLayout) cardView.findViewById(R.id.relative_card);
-        //TextView statusText = (TextView)cardView.findViewById(R.id.status_text);
         holder.statusText.setTypeface(Typeface.createFromAsset(context.getAssets(),"fonts/Aller_It.ttf"));
-        //TextView userText = (TextView)cardView.findViewById(R.id.user_name);
         holder.userText.setTypeface(Typeface.createFromAsset(context.getAssets(),"fonts/Aller_It.ttf"));
         String uid = statusModels.get(position).getUid();
         String creationDate = statusModels.get(position).getCreationDateAndTime();
@@ -103,7 +123,30 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
             holder.userText.setText("");
         }
         holder.date_time.setText("posted on "+date);
-        holder.statusText.setText(statusModels.get(position).getMessage());
+        String msg = statusModels.get(position).getMessage();
+        if(!msg.contains(messageKeys.get(position).getMessageKey())) {
+            holder.photoLinearLayout.setVisibility(View.INVISIBLE);
+            holder.statusText.setText(statusModels.get(position).getMessage());
+        }
+        else{
+            String parts[] = msg.split(" ");
+            reference = FirebaseStorage.getInstance().getReference();
+            int size = Integer.parseInt(parts[1]);
+            for(int i=0;i<size;i++){
+                StorageReference storageRef = reference.child(uid+"/"+parts[0]+"/photo"+i+".png/");
+                ImageView imageView = new ImageView(context);
+                imageView.setId(i);
+                //imageView.setPadding(10, 10, 10, 10);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(220, 220);
+                params.setMargins(10,10,10,10);
+                Glide.with(context).using(new FirebaseImageLoader()).load(storageRef).into(imageView);
+                imageView.setLayoutParams(params);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                holder.photoLinearLayout.addView(imageView);
+            }
+            holder.statusText.setVisibility(View.INVISIBLE);
+            holder.statusText.setEnabled(false);
+        }
         holder.card_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,14 +163,16 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
 
     public static class StatusViewHolder extends RecyclerView.ViewHolder{
         private View view;
-        //private RelativeLayout relativeLayout_card;
+        private RelativeLayout mainLayout;
+        private LinearLayout photoLinearLayout;
         private TextView statusText,userText,date_time;
         private CardView card_view;
 
         public StatusViewHolder(View itemView) {
             super(itemView);
             view = itemView;
-            //relativeLayout_card = (RelativeLayout) view.findViewById(R.id.relative_card);
+            mainLayout = (RelativeLayout)view.findViewById(R.id.relative_card);
+            photoLinearLayout = (LinearLayout)view.findViewById(R.id.photo_linear_layout);
             statusText = (TextView)view.findViewById(R.id.status_text);
             userText = (TextView)view.findViewById(R.id.user_name);
             card_view = (CardView) view.findViewById(R.id.card_view);

@@ -32,6 +32,7 @@ public class BlankFragment3 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final ArrayList<StatusModel> modelList = getArguments().getParcelableArrayList(MyUserHandleActivity.ARRAYLIST);
+        final ArrayList<MessageKeyModel> messageList = getArguments().getParcelableArrayList(MyUserHandleActivity.MESSAGE_KEYS);
         //final String uid = b.getString(MyUserHandleActivity.UID);
         View view = inflater.inflate(R.layout.fragment_blank_fragment3, container, false);
         RecyclerView userStatusView = (RecyclerView) view.findViewById(R.id.status_recycler_view_3);
@@ -42,7 +43,8 @@ public class BlankFragment3 extends Fragment {
         //final EditText updateStatusEditText = (EditText)view.findViewById(R.id.update_status_editText);
         //Button updateButton = (Button)view.findViewById(R.id.update_button);
         Collections.sort(modelList,new StatusComparator());
-        final StatusViewAdapter adapter = new StatusViewAdapter(view.getContext(),modelList,null);
+        Collections.sort(messageList, new MessageKeyComparator());
+        final StatusViewAdapter adapter = new StatusViewAdapter(view.getContext(),modelList,null,messageList);
         userStatusView.setLayoutManager(new LinearLayoutManager(getContext()));
         userStatusView.setAdapter(adapter);
         return view;

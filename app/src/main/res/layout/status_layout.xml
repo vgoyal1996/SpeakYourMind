@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<com.example.vipul.speakyourmind.BoundedRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/relative_card"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    app:bounded_width="500dp"
+    app:bounded_height="500dp">
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -33,6 +35,17 @@
             android:text="date and time"
             android:id="@+id/date_time"
             android:layout_marginBottom="7dp"/>
+        <HorizontalScrollView
+            android:id="@+id/horizontal_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+            <LinearLayout
+                android:id="@+id/photo_linear_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+            </LinearLayout>
+        </HorizontalScrollView>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,4 +59,4 @@
     </LinearLayout>
 
 </android.support.v7.widget.CardView>
-</RelativeLayout>
+</com.example.vipul.speakyourmind.BoundedRelativeLayout>

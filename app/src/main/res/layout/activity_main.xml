@@ -39,7 +39,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:hint="whats on your mind"
-            android:layout_weight="2"
+            android:layout_weight="3"
             android:drawableStart="@drawable/ic_border_color_white_18dp"
             android:drawablePadding="10dp"
             android:textSize="20sp"
@@ -49,10 +49,16 @@
             android:id="@+id/update_status_editText"/>
         <Button
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="update"
             android:background="@drawable/button_borders"
             android:layout_weight="1"
             android:id="@+id/update_button_main"/>
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_add_a_photo_black_48dp"
+            android:id="@+id/add_photos_status_button"/>
     </LinearLayout>
 </LinearLayout>

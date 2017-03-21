@@ -47,6 +47,7 @@ import java.util.List;
 public class MyUserHandleActivity extends AppCompatActivity {
     public static final String USER = "user";
     public static final String ARRAYLIST = "arraylist";
+    public static final String MESSAGE_KEYS = "message";
     public static final String INFO = "info";
     public static String UID;
     private Toolbar toolbar;
@@ -78,7 +79,12 @@ public class MyUserHandleActivity extends AppCompatActivity {
         if(UID.equals(MainActivity.USER_UID)) {
             myText.setText(MainActivity.CURRENT_USER);
             Uri uri = currUser.getCurrentUser().getPhotoUrl();
-            Glide.with(MyUserHandleActivity.this).load(uri).into(icam);
+            //Glide.with(MyUserHandleActivity.this).load(uri).into(icam);
+            if(icam.getDrawable()!=null) {
+                Toast.makeText(MyUserHandleActivity.this, icam.getDrawable().toString(), Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(MyUserHandleActivity.this,"false",Toast.LENGTH_SHORT).show();
         }
         else {
             myText.setText(userModel.getUserName());
@@ -211,6 +217,7 @@ public class MyUserHandleActivity extends AppCompatActivity {
             BlankFragment1 frag1 = new BlankFragment1();
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList(ARRAYLIST, (ArrayList<? extends Parcelable>) userModel.getStatusModelList());
+            bundle.putParcelableArrayList(MESSAGE_KEYS, (ArrayList<? extends Parcelable>) userModel.getMessageKeyModelList());
             frag1.setArguments(bundle);
             adapter.addFragment(frag1, "Recent Activity");
         }
@@ -218,6 +225,7 @@ public class MyUserHandleActivity extends AppCompatActivity {
             BlankFragment3 frag3 = new BlankFragment3();
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList(ARRAYLIST, (ArrayList<? extends Parcelable>) userModel.getStatusModelList());
+            bundle.putParcelableArrayList(MESSAGE_KEYS, (ArrayList<? extends Parcelable>) userModel.getMessageKeyModelList());
             frag3.setArguments(bundle);
             adapter.addFragment(frag3, "Recent Activity");
         }

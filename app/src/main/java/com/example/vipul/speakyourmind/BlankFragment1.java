@@ -50,6 +50,7 @@ public class BlankFragment1 extends Fragment {
                              Bundle savedInstanceState) {
         //Bundle b = getActivity().getIntent().getExtras();
         final ArrayList<StatusModel> modelList = getArguments().getParcelableArrayList(MyUserHandleActivity.ARRAYLIST);
+        final ArrayList<MessageKeyModel> messageList = getArguments().getParcelableArrayList(MyUserHandleActivity.MESSAGE_KEYS);
         //final String uid = b.getString(MyUserHandleActivity.UID);
         View view = inflater.inflate(R.layout.fragment_blank_fragment1, container, false);
         RecyclerView userStatusView = (RecyclerView) view.findViewById(R.id.status_recycler_view);
@@ -62,7 +63,8 @@ public class BlankFragment1 extends Fragment {
         updateStatusEditText.setTypeface(Typeface.createFromAsset(getActivity().getAssets(),"fonts/Aller_It.ttf"));
         updateButton.setTypeface(Typeface.createFromAsset(getActivity().getAssets(),"fonts/Aller_It.ttf"));
         Collections.sort(modelList,new StatusComparator());
-        final StatusViewAdapter adapter = new StatusViewAdapter(view.getContext(),modelList,null);
+        Collections.sort(messageList, new MessageKeyComparator());
+        final StatusViewAdapter adapter = new StatusViewAdapter(view.getContext(),modelList,null,messageList);
         userStatusView.setLayoutManager(new LinearLayoutManager(getContext()));
         userStatusView.setAdapter(adapter);
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference(UID);
@@ -75,7 +77,9 @@ public class BlankFragment1 extends Fragment {
                     String date = sdf.format(new Date());
                     StatusModel newModel = new StatusModel(text,date);
                     //StatusModel newModel2  = new StatusModel(text,date,uid);
-                    reference.child("statusList").push().setValue(newModel);
+                    String id = reference.child("statusList").push().getKey();
+                    reference.child("statusList").child(id).setValue(newModel);
+                    messageList.add(new MessageKeyModel(id,date));
                     modelList.add(newModel);
                     adapter.notifyDataSetChanged();
                     updateStatusEditText.setText("");

@@ -11,6 +11,7 @@ public class UserModel implements Serializable {
     private String password;
     private String phone;
     private List<StatusModel> statusModelList;
+    private List<MessageKeyModel> messageKeyModelList;
 
     public UserModel(String uid,String userName, String email, String password, String phone) {
         this.uid = uid;
@@ -73,5 +74,13 @@ public class UserModel implements Serializable {
 
     public void setStatusModelList(List<StatusModel> statusModelList) {
         this.statusModelList = statusModelList;
+    }
+
+    public List<MessageKeyModel> getMessageKeyModelList() {
+        return messageKeyModelList;
+    }
+
+    public void setMessageKeyModelList(List<MessageKeyModel> messageKeyModelList) {
+        this.messageKeyModelList = messageKeyModelList;
     }
 }

@@ -89,26 +89,6 @@ public class LogInActivity extends AppCompatActivity {
                 pd = ProgressDialog.show(LogInActivity.this,"Logging In","Please wait...",true,false);
                 Thread t = new Thread(new LogInThread(LogInActivity.this,email,password));
                 t.start();
-                /*if(TextUtils.isEmpty(email)) {
-                    Toast.makeText(LogInActivity.this, "Please enter email address!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(password)) {
-                    Toast.makeText(LogInActivity.this, "Please enter password!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        pd = ProgressDialog.show(LogInActivity.this,"Logging In","Please wait...",true,false);
-                        Thread t = new Thread(new LogInThread(LogInActivity.this,task));
-                        if(!task.isSuccessful())
-                            Toast.makeText(LogInActivity.this,"Wrong EmailId or password",Toast.LENGTH_SHORT).show();
-                        else{
-                            t.start();
-                        }
-                    }
-                });*/
             }
         });
     }
@@ -175,5 +155,4 @@ public class LogInActivity extends AppCompatActivity {
             }
         };
     }
-
 }

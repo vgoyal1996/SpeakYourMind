@@ -21,6 +21,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,12 +49,14 @@ public class MainActivity extends AppCompatActivity {
     public static String CURRENT_USER;
     private SearchView sv;
     private RecyclerView statusView;
-    private List<StatusModel> statuses;
+    private static List<StatusModel> statuses;
     private StatusViewAdapter adapter;
-    private Map<String,UserModel> users;
+    private static Map<String,UserModel> users;
     private TextView myText;
     private ImageView search;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private DatabaseReference reference;
+    private List<MessageKeyModel> messageKeys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,39 +81,21 @@ public class MainActivity extends AppCompatActivity {
         myText = (TextView)findViewById(R.id.mytext);
         USER_UID = auth.getCurrentUser().getUid();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference reference = database.getReference();
+        reference = database.getReference();
         statusView = (RecyclerView)findViewById(R.id.status_view);
         sv= (SearchView) findViewById(R.id.msearch1);
         //search = (ImageView) findViewById(R.id.search);
         final EditText updateStatusEditText = (EditText) findViewById(R.id.update_status_editText);
         updateStatusEditText.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Aller_It.ttf"));
         Button updateButton = (Button) findViewById(R.id.update_button_main);
+        ImageButton addPhotoButton = (ImageButton)findViewById(R.id.add_photos_status_button);
         updateButton.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Aller_It.ttf"));
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String text = updateStatusEditText.getText().toString().trim();
                 if(!text.equals("")){
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                    String date = sdf.format(new Date());
-                    StatusModel newModel = new StatusModel(text,date,USER_UID);
-                    StatusModel newModel2 = new StatusModel(text,date);
-                    reference.child(USER_UID).child("statusList").push().setValue(newModel2);
-                    statuses.add(newModel);
-                    UserModel model = users.get(USER_UID);
-                    List<StatusModel> list = model.getStatusModelList();
-                    if(list!=null) {
-                        list.add(newModel2);
-                        model.setStatusModelList(list);
-                    }
-                    else{
-                        list = new ArrayList<>();
-                        list.add(newModel2);
-                        model.setStatusModelList(list);
-                    }
-                    users.remove(USER_UID);
-                    users.put(USER_UID,model);
-                    adapter.notifyDataSetChanged();
+                    setTextStatus(text);
                     updateStatusEditText.setText("");
                 }
             }
@@ -160,6 +145,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(getIntent());
             }
         });
+        addPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, TakePhotoActivity.class));
+                overridePendingTransition(R.anim.dialog_in,0);
+            }
+        });
     }
 
     class UpdateUITask extends AsyncTask<DataSnapshot,Void,List<StatusModel>>{
@@ -171,11 +163,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected List<StatusModel> doInBackground(DataSnapshot... dataSnapshots) {
+            messageKeys = new ArrayList<>();
             Iterable<DataSnapshot> uids = dataSnapshots[0].getChildren();
             for(DataSnapshot child : uids){
                 HashMap<String,String> values = (HashMap<String,String>)child.getValue();
                 UserModel user = new UserModel(child.getKey(),values.get("userName"),values.get("email"),values.get("password"),values.get("phone"));
                 List<StatusModel> userStatuses = new ArrayList<>();
+                List<MessageKeyModel> individualMessageKeys = new ArrayList<>();
                 if(values.containsKey("statusList")) {
                     Object o = values.get("statusList");
                     HashMap<String,HashMap<String,String> > map = (HashMap<String, HashMap<String,String>>)o;
@@ -183,9 +177,13 @@ public class MainActivity extends AppCompatActivity {
                         HashMap<String,String> temp = m.getValue();
                         userStatuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime")));
                         statuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime"),child.getKey()));
+                        messageKeys.add(new MessageKeyModel(m.getKey(),temp.get("creationDateAndTime")));
+                        individualMessageKeys.add(new MessageKeyModel(m.getKey(),temp.get("creationDateAndTime")));
                     }
                     Collections.sort(statuses,new StatusComparator());
+                    Collections.sort(messageKeys, new MessageKeyComparator());
                 }
+                user.setMessageKeyModelList(individualMessageKeys);
                 user.setStatusModelList(userStatuses);
                 users.put(child.getKey(),user);
             }
@@ -201,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
             myText.setText(auth.getCurrentUser().getDisplayName());
             adapter.setStatusModels(statusModels);
             adapter.setUsers(users);
+            adapter.setMessageKeys(messageKeys);
             LinearLayoutManager manager = new LinearLayoutManager(MainActivity.this);
             statusView.setLayoutManager(manager);
             LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this,R.anim.list_layout_controller);//R.anim.list_layout_controller
@@ -227,4 +226,34 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    public void setTextStatus(String text){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String date = sdf.format(new Date());
+        StatusModel newModel = new StatusModel(text,date,USER_UID);
+        StatusModel newModel2 = new StatusModel(text,date);
+        addToStatuses(newModel,newModel2);
+        String updateUid = reference.child(USER_UID).child("statusList").push().getKey();
+        messageKeys.add(new MessageKeyModel(updateUid,date));
+        reference.child(USER_UID).child("statusList").child(updateUid).setValue(newModel2);
+        adapter.notifyDataSetChanged();
+    }
+
+    public static void addToStatuses(StatusModel listModel,StatusModel firebaseModel){
+        statuses.add(listModel);
+        UserModel userModel = users.get(USER_UID);
+        List<StatusModel> list = userModel.getStatusModelList();
+        if(list!=null) {
+            list.add(firebaseModel);
+            userModel.setStatusModelList(list);
+        }
+        else{
+            list = new ArrayList<>();
+            list.add(firebaseModel);
+            userModel.setStatusModelList(list);
+        }
+        users.remove(USER_UID);
+        users.put(USER_UID,userModel);
+    }
+
 }
