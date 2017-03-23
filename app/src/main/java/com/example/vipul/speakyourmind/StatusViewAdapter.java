@@ -4,6 +4,7 @@ package com.example.vipul.speakyourmind;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,10 +17,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -134,12 +135,18 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
             int size = Integer.parseInt(parts[1]);
             for(int i=0;i<size;i++){
                 StorageReference storageRef = reference.child(uid+"/"+parts[0]+"/photo"+i+".png/");
-                ImageView imageView = new ImageView(context);
+                final ImageView imageView = new ImageView(context);
                 imageView.setId(i);
                 //imageView.setPadding(10, 10, 10, 10);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(220, 220);
                 params.setMargins(10,10,10,10);
-                Glide.with(context).using(new FirebaseImageLoader()).load(storageRef).into(imageView);
+                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.with(context).load(uri).into(imageView);
+                    }
+                });
+                //Glide.with(context).using(new FirebaseImageLoader()).load(storageRef).into(imageView);
                 imageView.setLayoutParams(params);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 holder.photoLinearLayout.addView(imageView);

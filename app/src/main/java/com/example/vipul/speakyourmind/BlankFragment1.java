@@ -48,10 +48,8 @@ public class BlankFragment1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //Bundle b = getActivity().getIntent().getExtras();
         final ArrayList<StatusModel> modelList = getArguments().getParcelableArrayList(MyUserHandleActivity.ARRAYLIST);
         final ArrayList<MessageKeyModel> messageList = getArguments().getParcelableArrayList(MyUserHandleActivity.MESSAGE_KEYS);
-        //final String uid = b.getString(MyUserHandleActivity.UID);
         View view = inflater.inflate(R.layout.fragment_blank_fragment1, container, false);
         RecyclerView userStatusView = (RecyclerView) view.findViewById(R.id.status_recycler_view);
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.background);

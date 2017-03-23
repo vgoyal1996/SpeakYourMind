@@ -26,8 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +33,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -79,17 +78,17 @@ public class MyUserHandleActivity extends AppCompatActivity {
         if(UID.equals(MainActivity.USER_UID)) {
             myText.setText(MainActivity.CURRENT_USER);
             Uri uri = currUser.getCurrentUser().getPhotoUrl();
-            //Glide.with(MyUserHandleActivity.this).load(uri).into(icam);
-            if(icam.getDrawable()!=null) {
-                Toast.makeText(MyUserHandleActivity.this, icam.getDrawable().toString(), Toast.LENGTH_SHORT).show();
-            }
-            else
-                Toast.makeText(MyUserHandleActivity.this,"false",Toast.LENGTH_SHORT).show();
+            Picasso.with(MyUserHandleActivity.this).load(uri).into(icam);
         }
         else {
             myText.setText(userModel.getUserName());
             StorageReference ref = storage.getReference().child(UID + "/" + userModel.getEmail() + ".jpg");
-            Glide.with(MyUserHandleActivity.this).using(new FirebaseImageLoader()).load(ref).into(icam);
+            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.with(MyUserHandleActivity.this).load(uri).into(icam);
+                }
+            });
         }
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -184,7 +183,8 @@ public class MyUserHandleActivity extends AppCompatActivity {
                 options.inJustDecodeBounds = false;
                 bm = BitmapFactory.decodeFile(selectedImagePath, options);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                bm.compress(Bitmap.CompressFormat.JPEG
+                        , 100, bos);
                 finalImage = bos.toByteArray();
                 icam.setImageBitmap(bm);
             }
@@ -213,10 +213,16 @@ public class MyUserHandleActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        List<StatusModel> list = userModel.getStatusModelList();
+        for(int i=0;i<list.size();i++){
+            StatusModel model = list.get(i);
+            model.setUid(UID);
+            list.set(i,model);
+        }
         if(currUser.getCurrentUser().getEmail().equals(userModel.getEmail())){
             BlankFragment1 frag1 = new BlankFragment1();
             Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(ARRAYLIST, (ArrayList<? extends Parcelable>) userModel.getStatusModelList());
+            bundle.putParcelableArrayList(ARRAYLIST, (ArrayList<? extends Parcelable>) list);
             bundle.putParcelableArrayList(MESSAGE_KEYS, (ArrayList<? extends Parcelable>) userModel.getMessageKeyModelList());
             frag1.setArguments(bundle);
             adapter.addFragment(frag1, "Recent Activity");
@@ -224,7 +230,7 @@ public class MyUserHandleActivity extends AppCompatActivity {
         else{
             BlankFragment3 frag3 = new BlankFragment3();
             Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(ARRAYLIST, (ArrayList<? extends Parcelable>) userModel.getStatusModelList());
+            bundle.putParcelableArrayList(ARRAYLIST, (ArrayList<? extends Parcelable>) list);
             bundle.putParcelableArrayList(MESSAGE_KEYS, (ArrayList<? extends Parcelable>) userModel.getMessageKeyModelList());
             frag3.setArguments(bundle);
             adapter.addFragment(frag3, "Recent Activity");

@@ -232,9 +232,21 @@ public class MainActivity extends AppCompatActivity {
         String date = sdf.format(new Date());
         StatusModel newModel = new StatusModel(text,date,USER_UID);
         StatusModel newModel2 = new StatusModel(text,date);
-        addToStatuses(newModel,newModel2);
         String updateUid = reference.child(USER_UID).child("statusList").push().getKey();
         messageKeys.add(new MessageKeyModel(updateUid,date));
+        MessageKeyModel uid = new MessageKeyModel(updateUid,date);
+        UserModel userModel = users.get(USER_UID);
+        List<MessageKeyModel> message = userModel.getMessageKeyModelList();
+        if(message!=null){
+            message.add(uid);
+            userModel.setMessageKeyModelList(message);
+        }
+        else{
+            message = new ArrayList<>();
+            message.add(uid);
+            userModel.setMessageKeyModelList(message);
+        }
+        addToStatuses(newModel,newModel2);
         reference.child(USER_UID).child("statusList").child(updateUid).setValue(newModel2);
         adapter.notifyDataSetChanged();
     }
