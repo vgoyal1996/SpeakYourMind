@@ -22,10 +22,10 @@ public class StatusComparator implements Comparator<StatusModel> {
             e.printStackTrace();
         }
         if(d1.getTime()<d2.getTime())
-            return -1;
+            return 1;
         else if(d1.getTime()==d2.getTime())
             return 0;
         else
-            return 1;
+            return -1;
     }
 }

@@ -5,11 +5,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class StatusModel implements Parcelable,Serializable {
     private String message;
     private String creationDateAndTime;
     private String uid;
+    private List<CommentModel> commentList;
+
+    public StatusModel(String message, String creationDateAndTime, List<CommentModel> commentList) {
+        this.message = message;
+        this.creationDateAndTime = creationDateAndTime;
+        this.commentList = commentList;
+    }
+
+    public StatusModel(String message, String creationDateAndTime, String uid, List<CommentModel> commentList) {
+        this.message = message;
+        this.creationDateAndTime = creationDateAndTime;
+        this.uid = uid;
+        this.commentList = commentList;
+    }
 
     public StatusModel(String message, String creationDateAndTime) {
         this.message = message;
@@ -28,6 +43,8 @@ public class StatusModel implements Parcelable,Serializable {
         this.message = data[0];
         this.creationDateAndTime = data[1];
         this.uid = data[2];
+        List<CommentModel> list = null;
+        in.readList(list,CommentModel.class.getClassLoader());
     }
 
     public String getUid() {
@@ -54,6 +71,14 @@ public class StatusModel implements Parcelable,Serializable {
         this.creationDateAndTime = creationDateAndTime;
     }
 
+    public List<CommentModel> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<CommentModel> commentList) {
+        this.commentList = commentList;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -62,6 +87,7 @@ public class StatusModel implements Parcelable,Serializable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeStringArray(new String[]{this.message,this.creationDateAndTime,this.uid});
+        parcel.writeList(commentList);
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator(){

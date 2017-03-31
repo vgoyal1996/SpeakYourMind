@@ -46,6 +46,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     public static String USER_UID;
+    public static String DISPLAY_NAME;
     public static String CURRENT_USER;
     private SearchView sv;
     private RecyclerView statusView;
@@ -175,10 +176,20 @@ public class MainActivity extends AppCompatActivity {
                     HashMap<String,HashMap<String,String> > map = (HashMap<String, HashMap<String,String>>)o;
                     for(Map.Entry<String,HashMap<String,String> > m : map.entrySet()){
                         HashMap<String,String> temp = m.getValue();
-                        userStatuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime")));
-                        statuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime"),child.getKey()));
                         messageKeys.add(new MessageKeyModel(m.getKey(),temp.get("creationDateAndTime")));
                         individualMessageKeys.add(new MessageKeyModel(m.getKey(),temp.get("creationDateAndTime")));
+                        List<CommentModel> statusComments = null;
+                        if(temp.containsKey("comments")){
+                            statusComments = new ArrayList<>();
+                            Object commentObject = temp.get("comments");
+                            HashMap<String,HashMap<String,String> > commentMap = (HashMap<String, HashMap<String,String>>)commentObject;
+                            for(Map.Entry<String,HashMap<String,String> > comMap : commentMap.entrySet()){
+                                HashMap<String,String> cMap = comMap.getValue();
+                                statusComments.add(new CommentModel(cMap.get("userName"),cMap.get("dateOfComment"),cMap.get("comment")));
+                            }
+                        }
+                        userStatuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime"),statusComments));
+                        statuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime"),child.getKey(),statusComments));
                     }
                     Collections.sort(statuses,new StatusComparator());
                     Collections.sort(messageKeys, new MessageKeyComparator());
@@ -196,7 +207,8 @@ public class MainActivity extends AppCompatActivity {
             swipeRefreshLayout.setRefreshing(false);
             CURRENT_USER = users.get(USER_UID).getUserName();
             //myText.setText(users.get(USER_UID).getUserName());
-            myText.setText(auth.getCurrentUser().getDisplayName());
+            DISPLAY_NAME = auth.getCurrentUser().getDisplayName();
+            myText.setText(DISPLAY_NAME);
             adapter.setStatusModels(statusModels);
             adapter.setUsers(users);
             adapter.setMessageKeys(messageKeys);

@@ -6,10 +6,14 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -18,12 +22,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +45,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
     private RecyclerViewItemClickListener listener;
     private CustomFilter filter;
     private StorageReference reference;
+    private CommentAdapter adapter;
     private static final String[] MONTH_NAMES = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     private static final String[] WEEK_DAYS = {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
 
@@ -93,10 +101,10 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
     }
 
     @Override
-    public void onBindViewHolder(final StatusViewAdapter.StatusViewHolder holder, int position) {
+    public void onBindViewHolder(final StatusViewAdapter.StatusViewHolder holder, final int position) {
         holder.statusText.setTypeface(Typeface.createFromAsset(context.getAssets(),"fonts/Aller_It.ttf"));
         holder.userText.setTypeface(Typeface.createFromAsset(context.getAssets(),"fonts/Aller_It.ttf"));
-        String uid = statusModels.get(position).getUid();
+        final String uid = statusModels.get(position).getUid();
         String creationDate = statusModels.get(position).getCreationDateAndTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Calendar c = null;
@@ -161,6 +169,64 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                     listener.onItemClick(holder.getAdapterPosition());
             }
         });
+        holder.likeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        final DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference();
+        holder.commentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(holder.commentView.getVisibility()==View.GONE) {
+                    List<CommentModel> commentModelList = statusModels.get(position).getCommentList();
+                    holder.commentView.setVisibility(View.VISIBLE);
+                    holder.commentLayout.setVisibility(View.VISIBLE);
+                    if(commentModelList!=null){
+                        adapter = new CommentAdapter(context,commentModelList);
+                        LinearLayoutManager manager = new LinearLayoutManager(context);
+                        holder.commentView.setLayoutManager(manager);
+                        holder.commentView.setAdapter(adapter);
+                    }
+                }
+                else{
+                    holder.commentView.setVisibility(View.GONE);
+                    holder.commentLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+        holder.updateCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String comment = holder.writeCommentEditText.getText().toString();
+                if(TextUtils.isEmpty(comment))
+                    return;
+                String commentUid = dbReference.child(uid+"/statusList/"+messageKeys.get(position).getMessageKey()).child("comments").push().getKey();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                String date = sdf.format(new Date());
+                CommentModel modelForApp = new CommentModel(MainActivity.DISPLAY_NAME,date,comment);
+                dbReference.child(uid+"/statusList/"+messageKeys.get(position).getMessageKey()).child("comments").child(commentUid).setValue(modelForApp);
+                List<CommentModel> commentModelList = statusModels.get(position).getCommentList();
+                if(commentModelList!=null) {
+                    commentModelList.add(modelForApp);
+                }
+                else{
+                    commentModelList = new ArrayList<>();
+                    commentModelList.add(modelForApp);
+                }
+                statusModels.get(position).setCommentList(commentModelList);
+                if(adapter!=null)
+                    adapter.notifyDataSetChanged();
+                else{
+                    adapter = new CommentAdapter(context,commentModelList);
+                    LinearLayoutManager manager = new LinearLayoutManager(context);
+                    holder.commentView.setLayoutManager(manager);
+                    holder.commentView.setAdapter(adapter);
+                }
+                holder.writeCommentEditText.setText("");
+            }
+        });
     }
 
     @Override
@@ -174,6 +240,12 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
         private LinearLayout photoLinearLayout;
         private TextView statusText,userText,date_time;
         private CardView card_view;
+        private Button likeButton;
+        private Button commentButton;
+        private RecyclerView commentView;
+        private LinearLayout commentLayout;
+        private EditText writeCommentEditText;
+        private Button updateCommentButton;
 
         public StatusViewHolder(View itemView) {
             super(itemView);
@@ -184,6 +256,12 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
             userText = (TextView)view.findViewById(R.id.user_name);
             card_view = (CardView) view.findViewById(R.id.card_view);
             date_time = (TextView) view.findViewById(R.id.date_time);
+            likeButton = (Button) view.findViewById(R.id.like_button);
+            commentButton = (Button) view.findViewById(R.id.comment_button);
+            commentView = (RecyclerView)view.findViewById(R.id.comment_recycler_view);
+            commentLayout = (LinearLayout)view.findViewById(R.id.comment_layout);
+            writeCommentEditText = (EditText)view.findViewById(R.id.write_comment_editText);
+            updateCommentButton = (Button)view.findViewById(R.id.update_comment_button);
         }
     }
     @Override

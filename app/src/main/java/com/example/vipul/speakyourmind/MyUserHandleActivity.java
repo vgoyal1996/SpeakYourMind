@@ -7,23 +7,23 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -66,22 +66,19 @@ public class MyUserHandleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_user_handle);
         userModel = (UserModel)getIntent().getSerializableExtra(USER);
         UID = userModel.getUid();
-        //toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
         currUser = FirebaseAuth.getInstance();
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setCustomView(R.layout.action_bar_layout);
-        TextView myText = (TextView)findViewById(R.id.mytext);
         icam = (ImageView) findViewById(R.id.profile_photo);
+        CollapsingToolbarLayout collapsing_container = (CollapsingToolbarLayout) findViewById(R.id.collapsing_container);
+        collapsing_container.setCollapsedTitleTypeface(Typeface.create("cursive",Typeface.NORMAL));
+        collapsing_container.setExpandedTitleTypeface(Typeface.create("cursive",Typeface.NORMAL));
         storage = FirebaseStorage.getInstance();
         if(UID.equals(MainActivity.USER_UID)) {
-            myText.setText(MainActivity.CURRENT_USER);
+            collapsing_container.setTitle(MainActivity.CURRENT_USER);
             Uri uri = currUser.getCurrentUser().getPhotoUrl();
             Picasso.with(MyUserHandleActivity.this).load(uri).into(icam);
         }
         else {
-            myText.setText(userModel.getUserName());
+            collapsing_container.setTitle(userModel.getUserName());
             StorageReference ref = storage.getReference().child(UID + "/" + userModel.getEmail() + ".jpg");
             ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
