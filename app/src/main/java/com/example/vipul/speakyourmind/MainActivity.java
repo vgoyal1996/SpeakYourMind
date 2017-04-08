@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                         messageKeys.add(new MessageKeyModel(m.getKey(),temp.get("creationDateAndTime")));
                         individualMessageKeys.add(new MessageKeyModel(m.getKey(),temp.get("creationDateAndTime")));
                         List<CommentModel> statusComments = null;
+                        List<LikeModel> statusLikes = null;
                         if(temp.containsKey("comments")){
                             statusComments = new ArrayList<>();
                             Object commentObject = temp.get("comments");
@@ -188,8 +189,18 @@ public class MainActivity extends AppCompatActivity {
                                 statusComments.add(new CommentModel(cMap.get("userName"),cMap.get("dateOfComment"),cMap.get("comment")));
                             }
                         }
-                        userStatuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime"),statusComments));
-                        statuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime"),child.getKey(),statusComments));
+                        if(temp.containsKey("likes")){
+                            statusLikes = new ArrayList<>();
+                            Object commentObject = temp.get("likes");
+                            HashMap<String,HashMap<String,Object> > likeMap = (HashMap<String, HashMap<String,Object>>)commentObject;
+                            for(Map.Entry<String,HashMap<String,Object> > lMap : likeMap.entrySet()){
+                                HashMap<String,Object> getLikeMap = lMap.getValue();
+                                Boolean isLiked = (Boolean) getLikeMap.get("liked");
+                                statusLikes.add(new LikeModel((String) getLikeMap.get("userUid"),isLiked,lMap.getKey()));
+                            }
+                        }
+                        userStatuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime"),statusComments,statusLikes));
+                        statuses.add(new StatusModel(temp.get("message"),temp.get("creationDateAndTime"),child.getKey(),statusComments,statusLikes));
                     }
                     Collections.sort(statuses,new StatusComparator());
                     Collections.sort(messageKeys, new MessageKeyComparator());

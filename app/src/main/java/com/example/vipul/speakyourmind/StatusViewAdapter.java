@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -145,7 +146,6 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                 StorageReference storageRef = reference.child(uid+"/"+parts[0]+"/photo"+i+".png/");
                 final ImageView imageView = new ImageView(context);
                 imageView.setId(i);
-                //imageView.setPadding(10, 10, 10, 10);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(220, 220);
                 params.setMargins(10,10,10,10);
                 storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -154,14 +154,33 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                         Picasso.with(context).load(uri).into(imageView);
                     }
                 });
-                //Glide.with(context).using(new FirebaseImageLoader()).load(storageRef).into(imageView);
                 imageView.setLayoutParams(params);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 holder.photoLinearLayout.addView(imageView);
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(context,v.getId(),Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
             holder.statusText.setVisibility(View.INVISIBLE);
             holder.statusText.setEnabled(false);
         }
+        final List<LikeModel> likeModelList;
+        if(statusModels.get(position).getLikeList()==null)
+            likeModelList = new ArrayList<>();
+        else
+            likeModelList = statusModels.get(position).getLikeList();
+        int likeCount=0;
+        if(likeModelList!=null) {
+            for (int i = 0; i < likeModelList.size(); i++) {
+                if (likeModelList.get(i).isLiked())
+                    likeCount++;
+            }
+        }
+        if(likeCount!=0)
+            holder.likeButton.setText("LIKE "+likeCount);
         holder.card_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -169,13 +188,47 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                     listener.onItemClick(holder.getAdapterPosition());
             }
         });
+        final DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference();
         holder.likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                String[] arr = holder.likeButton.getText().toString().split(" ");
+                int c;
+                if(arr.length!=1)
+                    c = Integer.parseInt(arr[1]);
+                else
+                    c = 0;
+                LikeModel model = null;
+                for (int i = 0; i < likeModelList.size(); i++) {
+                    if (likeModelList.get(i).getUserUid().equals(MainActivity.USER_UID)) {
+                        model = likeModelList.get(i);
+                        if (model.isLiked()) {
+                            model.setLiked(false);
+                            c--;
+                        } else {
+                            model.setLiked(true);
+                            c++;
+                        }
+                        likeModelList.set(i, model);
+                        break;
+                    }
+                }
+                if (model != null)
+                    dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(model.getLikeUid()).child("liked").setValue(String.valueOf(model.isLiked()));
+                else {
+                    String likeUid = dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").push().getKey();
+                    model = new LikeModel(MainActivity.USER_UID, true, likeUid);
+                    LikeModel modelForDb = new LikeModel(MainActivity.USER_UID, true);
+                    dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(likeUid).setValue(modelForDb);
+                    likeModelList.add(model);
+                    c++;
+                }
+                if(c!=0)
+                    holder.likeButton.setText("LIKE "+c);
+                else
+                    holder.likeButton.setText("LIKE");
             }
         });
-        final DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference();
         holder.commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

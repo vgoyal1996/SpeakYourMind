@@ -12,6 +12,7 @@ public class StatusModel implements Parcelable,Serializable {
     private String creationDateAndTime;
     private String uid;
     private List<CommentModel> commentList;
+    private List<LikeModel> likeList;
 
     public StatusModel(String message, String creationDateAndTime, List<CommentModel> commentList) {
         this.message = message;
@@ -24,6 +25,21 @@ public class StatusModel implements Parcelable,Serializable {
         this.creationDateAndTime = creationDateAndTime;
         this.uid = uid;
         this.commentList = commentList;
+    }
+
+    public StatusModel(String message, String creationDateAndTime, List<CommentModel> commentList, List<LikeModel> likeList) {
+        this.message = message;
+        this.creationDateAndTime = creationDateAndTime;
+        this.commentList = commentList;
+        this.likeList = likeList;
+    }
+
+    public StatusModel(String message, String creationDateAndTime, String uid, List<CommentModel> commentList, List<LikeModel> likeList) {
+        this.message = message;
+        this.creationDateAndTime = creationDateAndTime;
+        this.uid = uid;
+        this.commentList = commentList;
+        this.likeList = likeList;
     }
 
     public StatusModel(String message, String creationDateAndTime) {
@@ -45,6 +61,8 @@ public class StatusModel implements Parcelable,Serializable {
         this.uid = data[2];
         List<CommentModel> list = null;
         in.readList(list,CommentModel.class.getClassLoader());
+        List<LikeModel> likeModels = null;
+        in.readList(likeModels,LikeModel.class.getClassLoader());
     }
 
     public String getUid() {
@@ -79,6 +97,14 @@ public class StatusModel implements Parcelable,Serializable {
         this.commentList = commentList;
     }
 
+    public List<LikeModel> getLikeList() {
+        return likeList;
+    }
+
+    public void setLikeList(List<LikeModel> likeList) {
+        this.likeList = likeList;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -88,6 +114,7 @@ public class StatusModel implements Parcelable,Serializable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeStringArray(new String[]{this.message,this.creationDateAndTime,this.uid});
         parcel.writeList(commentList);
+        parcel.writeList(likeList);
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator(){
