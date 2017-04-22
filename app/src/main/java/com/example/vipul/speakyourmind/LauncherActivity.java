@@ -15,9 +15,7 @@ public class LauncherActivity extends AppCompatActivity {
         if(auth.getCurrentUser()==null)
             startActivity(new Intent(LauncherActivity.this,LogInActivity.class));
         else {
-            auth.signOut();
-            startActivity(new Intent(LauncherActivity.this,LogInActivity.class));
-            //startActivity(new Intent(LauncherActivity.this, MainActivity.class));
+            startActivity(new Intent(LauncherActivity.this, MainActivity.class));
         }
         finish();
     }

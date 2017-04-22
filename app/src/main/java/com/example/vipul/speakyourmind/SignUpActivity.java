@@ -84,7 +84,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public class UserThread implements Runnable{
+    private class UserThread implements Runnable{
         Context context;
         String finalName,finalEmail,finalPassword,finalPhone;
 

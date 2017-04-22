@@ -1,6 +1,8 @@
 package com.example.vipul.speakyourmind;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,10 +13,13 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,14 +48,17 @@ public class UserProfileActivity extends AppCompatActivity {
     private static final int SELECT_FILE=2;
     private ImageView profilePic;
     private byte[] imageInByte = null;
+    private ProgressDialog pd;
+    private FirebaseUser currUser;
+    private String uid,email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-        final FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
-        final String uid = currUser.getUid();
-        final String email = currUser.getEmail();
+        currUser = FirebaseAuth.getInstance().getCurrentUser();
+        uid = currUser.getUid();
+        email = currUser.getEmail();
         TextView userProfileHeading = (TextView)findViewById(R.id.user_profile_heading_text);
         TextView userProfileEmail = (TextView)findViewById(R.id.user_profile_email_text);
         TextView userProfilePic = (TextView)findViewById(R.id.user_profile_pic_text);
@@ -77,32 +85,76 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 final String userName = profileEditText.getText().toString().trim();
-                if(imageInByte!=null){
-                    FirebaseStorage storage = FirebaseStorage.getInstance();
-                    StorageReference ref = storage.getReference().child(uid+"/"+email+".jpg");
-                    UploadTask uploadTask = ref.putBytes(imageInByte);
-                    final Uri[] downloadUrl = new Uri[1];
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            Toast.makeText(UserProfileActivity.this,exception.getMessage(),Toast.LENGTH_SHORT).show();
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(UserProfileActivity.this,"Sign up successful!!!\n" +
-                                    "Please login to continue",Toast.LENGTH_SHORT).show();
-                            downloadUrl[0] = taskSnapshot.getDownloadUrl();
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(userName).setPhotoUri(downloadUrl[0]).build();
-                            currUser.updateProfile(profileUpdates);
-                            startActivity(new Intent(UserProfileActivity.this,LogInActivity.class));
-                            finish();
-                        }
-                    });
-                }
+                pd = ProgressDialog.show(UserProfileActivity.this,"Updating","Please wait...",true,false);
+                Thread t = new Thread(new UserThread(UserProfileActivity.this,userName));
+                t.start();
             }
         });
+    }
+
+    private class UserThread implements Runnable {
+        Context context;
+        String userName;
+
+        public UserThread(Context context, String userName) {
+            this.context = context;
+            this.userName = userName;
+        }
+
+
+        @Override
+        public void run() {
+            if(TextUtils.isEmpty(userName)){
+                Message m = new Message();
+                m.what = 2;
+                handler.sendMessage(m);
+            }
+            if(imageInByte!=null){
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference ref = storage.getReference().child(uid+"/"+email+".jpg");
+                UploadTask uploadTask = ref.putBytes(imageInByte);
+                final Uri[] downloadUrl = new Uri[1];
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Message m = new Message();
+                        m.what = 3;
+                        m.obj = exception.getMessage();
+                        handler.sendMessage(m);
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        downloadUrl[0] = taskSnapshot.getDownloadUrl();
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setDisplayName(userName).setPhotoUri(downloadUrl[0]).build();
+                        currUser.updateProfile(profileUpdates);
+                        handler.sendEmptyMessage(1);
+                    }
+                });
+            }
+        }
+
+        private Handler handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                pd.dismiss();
+                switch (msg.what){
+                    case 1:Toast.makeText(UserProfileActivity.this,"Sign up successful!!!\n" +
+                            "Please login to continue",Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(UserProfileActivity.this,LogInActivity.class));
+                        overridePendingTransition(R.anim.anim_enter,R.anim.anim_leave);
+                        finish();
+                        break;
+                    case 2:Toast.makeText(UserProfileActivity.this,"Please enter the Handle name",Toast.LENGTH_SHORT).show();
+                        break;
+                    case 3:Toast.makeText(UserProfileActivity.this,(String)msg.obj,Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        };
+
     }
 
 

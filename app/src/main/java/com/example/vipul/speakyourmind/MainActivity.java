@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     public static String DISPLAY_NAME;
     public static String CURRENT_USER;
     private SearchView sv;
+    //private Emojicon
+    private EditText updateStatusEditText;
     private RecyclerView statusView;
     private static List<StatusModel> statuses;
     private StatusViewAdapter adapter;
@@ -86,11 +88,27 @@ public class MainActivity extends AppCompatActivity {
         statusView = (RecyclerView)findViewById(R.id.status_view);
         sv= (SearchView) findViewById(R.id.msearch1);
         //search = (ImageView) findViewById(R.id.search);
-        final EditText updateStatusEditText = (EditText) findViewById(R.id.update_status_editText);
+        updateStatusEditText = (EditText) findViewById(R.id.update_status_editText);
         updateStatusEditText.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Aller_It.ttf"));
         Button updateButton = (Button) findViewById(R.id.update_button_main);
         ImageButton addPhotoButton = (ImageButton)findViewById(R.id.add_photos_status_button);
         updateButton.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Aller_It.ttf"));
+        /*updateStatusEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateStatusEditText.setText(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });*/
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        //setEmojiconFragment(false);
         statuses = new ArrayList<>();
         users = new HashMap<>();
         adapter = new StatusViewAdapter(getApplicationContext());
@@ -154,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     class UpdateUITask extends AsyncTask<DataSnapshot,Void,List<StatusModel>>{
 
