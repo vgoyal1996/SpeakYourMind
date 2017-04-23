@@ -27,6 +27,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -177,10 +179,12 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
             for (int i = 0; i < likeModelList.size(); i++) {
                 if (likeModelList.get(i).isLiked())
                     likeCount++;
+                if(likeModelList.get(i).getUserUid().equals(MainActivity.USER_UID))
+                    holder.likeButton.setLiked(true);
             }
         }
-        if(likeCount!=0)
-            holder.likeButton.setText("LIKE "+likeCount);
+        /*if(likeCount!=0)
+            holder.likeButton.setText("LIKE "+likeCount);*/
         holder.card_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -189,7 +193,54 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
             }
         });
         final DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference();
-        holder.likeButton.setOnClickListener(new View.OnClickListener() {
+        holder.likeButton.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                likeButton.setLiked(true);
+                LikeModel model = null;
+                for (int i = 0; i < likeModelList.size(); i++) {
+                    if (likeModelList.get(i).getUserUid().equals(MainActivity.USER_UID)) {
+                        model = likeModelList.get(i);
+                        model.setLiked(true);
+                        likeModelList.set(i, model);
+                        break;
+                    }
+                }
+                if (model != null)
+                    dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(model.getLikeUid()).child("liked").setValue(String.valueOf(model.isLiked()));
+                else {
+                    String likeUid = dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").push().getKey();
+                    model = new LikeModel(MainActivity.USER_UID, true, likeUid);
+                    LikeModel modelForDb = new LikeModel(MainActivity.USER_UID, true);
+                    dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(likeUid).setValue(modelForDb);
+                    likeModelList.add(model);
+                }
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                likeButton.setLiked(false);
+                LikeModel model = null;
+                for (int i = 0; i < likeModelList.size(); i++) {
+                    if (likeModelList.get(i).getUserUid().equals(MainActivity.USER_UID)) {
+                        model = likeModelList.get(i);
+                        model.setLiked(false);
+                        likeModelList.set(i, model);
+                        break;
+                    }
+                }
+                //if (model != null)
+                dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(model.getLikeUid()).child("liked").setValue(String.valueOf(model.isLiked()));
+                /*else {
+                    String likeUid = dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").push().getKey();
+                    model = new LikeModel(MainActivity.USER_UID, true, likeUid);
+                    LikeModel modelForDb = new LikeModel(MainActivity.USER_UID, true);
+                    dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(likeUid).setValue(modelForDb);
+                    likeModelList.add(model);
+                }*/
+            }
+        });
+        /*holder.likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String[] arr = holder.likeButton.getText().toString().split(" ");
@@ -228,7 +279,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                 else
                     holder.likeButton.setText("LIKE");
             }
-        });
+        });*/
         holder.commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -293,7 +344,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
         private LinearLayout photoLinearLayout;
         private TextView statusText,userText,date_time;
         private CardView card_view;
-        private Button likeButton;
+        private LikeButton likeButton;
         private Button commentButton;
         private RecyclerView commentView;
         private LinearLayout commentLayout;
@@ -309,7 +360,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
             userText = (TextView)view.findViewById(R.id.user_name);
             card_view = (CardView) view.findViewById(R.id.card_view);
             date_time = (TextView) view.findViewById(R.id.date_time);
-            likeButton = (Button) view.findViewById(R.id.like_button);
+            likeButton = (LikeButton) view.findViewById(R.id.like_button);
             commentButton = (Button) view.findViewById(R.id.comment_button);
             commentView = (RecyclerView)view.findViewById(R.id.comment_recycler_view);
             commentLayout = (LinearLayout)view.findViewById(R.id.comment_layout);

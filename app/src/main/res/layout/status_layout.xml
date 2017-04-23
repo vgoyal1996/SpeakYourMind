@@ -61,12 +61,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <Button
+            <com.like.LikeButton
+                app:icon_type="thumb"
+                app:icon_size="20dp"
+                android:id="@+id/like_button"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Like"
                 android:layout_weight="1"
-                android:id="@+id/like_button"/>
+                android:layout_height="wrap_content"/>
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
