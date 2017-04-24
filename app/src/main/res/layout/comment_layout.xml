@@ -1,32 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<com.flyco.roundview.RoundFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:rv="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/post_comment_layout">
+    android:layout_marginBottom="10dp"
+    android:padding="10dp"
+    rv:rv_backgroundColor="#009688"
+    rv:rv_cornerRadius="10dp">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="hello"
-        android:textColor="#000000"
-        android:textSize="20sp"
-        android:id="@+id/comment_user_name"/>
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="hello"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:id="@+id/comment_user_name"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="commented on"
-        android:textColor="#000000"
-        android:textSize="15sp"
-        android:id="@+id/comment_date"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="commented on"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:id="@+id/comment_date"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="comment"
-        android:textColor="#000000"
-        android:textSize="20sp"
-        android:id="@+id/comment_text"/>
-
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="comment"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:id="@+id/comment_text"/>
+    </LinearLayout>
+</com.flyco.roundview.RoundFrameLayout>

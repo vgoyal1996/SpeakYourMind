@@ -121,18 +121,13 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
         }
         holder.card_view.setBackgroundColor(Color.parseColor("#E3F2FD"));
         String date = WEEK_DAYS[c.get(Calendar.DAY_OF_WEEK)-1]+","+c.get(Calendar.DAY_OF_MONTH)+" "+MONTH_NAMES[c.get(Calendar.MONTH)]+" "+c.get(Calendar.YEAR);
-        if(users!=null) {
-            if(!uid.equals(MainActivity.USER_UID)){
-                holder.userText.setText(users.get(uid).getUserName());
-            }
-            else{
-                holder.userText.setText("You");
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)holder.card_view.getLayoutParams();
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            }
+        if(!uid.equals(MainActivity.USER_UID)){
+            holder.userText.setText(users.get(uid).getUserName());
         }
-        else {
-            holder.userText.setText("");
+        else{
+            holder.userText.setText("You");
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)holder.card_view.getLayoutParams();
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         }
         holder.date_time.setText("posted on "+date);
         String msg = statusModels.get(position).getMessage();

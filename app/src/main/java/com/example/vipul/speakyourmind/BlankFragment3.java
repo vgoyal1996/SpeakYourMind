@@ -44,7 +44,7 @@ public class BlankFragment3 extends Fragment {
         //Button updateButton = (Button)view.findViewById(R.id.update_button);
         Collections.sort(modelList,new StatusComparator());
         Collections.sort(messageList, new MessageKeyComparator());
-        final StatusViewAdapter adapter = new StatusViewAdapter(view.getContext(),modelList,null,messageList);
+        final StatusViewAdapter adapter = new StatusViewAdapter(view.getContext(),modelList,MainActivity.users,messageList);
         userStatusView.setLayoutManager(new LinearLayoutManager(getContext()));
         userStatusView.setAdapter(adapter);
         return view;

@@ -83,8 +83,8 @@
             android:id="@+id/comment_recycler_view"
             android:padding="7dp">
         </android.support.v7.widget.RecyclerView>
-    <LinearLayout
-        android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:visibility = "gone"

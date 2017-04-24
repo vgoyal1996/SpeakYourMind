@@ -4,19 +4,30 @@ package com.example.vipul.speakyourmind;
 import java.io.Serializable;
 
 public class CommentModel implements Serializable {
+    private String userUid;
     private String userName;
     private String dateOfComment;
     private String comment;
-
-    public CommentModel(String dateOfComment, String comment) {
-        this.dateOfComment = dateOfComment;
-        this.comment = comment;
-    }
 
     public CommentModel(String userName, String dateOfComment, String comment) {
         this.userName = userName;
         this.dateOfComment = dateOfComment;
         this.comment = comment;
+    }
+
+    public CommentModel(String userName, String dateOfComment, String comment,String userUid) {
+        this.userName = userName;
+        this.dateOfComment = dateOfComment;
+        this.comment = comment;
+        this.userUid = userUid;
+    }
+
+    public String getUserUid() {
+        return userUid;
+    }
+
+    public void setUserUid(String userUid) {
+        this.userUid = userUid;
     }
 
     public String getUserName() {

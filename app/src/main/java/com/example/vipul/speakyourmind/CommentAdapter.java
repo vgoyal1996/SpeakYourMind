@@ -26,7 +26,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
     }
 
     @Override
-    public void onBindViewHolder(CommentAdapter.CommentHolder holder, int position) {
+    public void onBindViewHolder(final CommentAdapter.CommentHolder holder, int position) {
         CommentModel model = commentModelList.get(position);
         holder.commentUserName.setText(model.getUserName());
         holder.commentDate.setText(model.getDateOfComment());
