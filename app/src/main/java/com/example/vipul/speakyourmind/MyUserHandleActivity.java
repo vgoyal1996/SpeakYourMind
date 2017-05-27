@@ -72,8 +72,8 @@ public class MyUserHandleActivity extends AppCompatActivity {
         collapsing_container.setCollapsedTitleTypeface(Typeface.create("cursive",Typeface.NORMAL));
         collapsing_container.setExpandedTitleTypeface(Typeface.create("cursive",Typeface.NORMAL));
         storage = FirebaseStorage.getInstance();
-        if(UID.equals(MainActivity.USER_UID)) {
-            collapsing_container.setTitle(MainActivity.CURRENT_USER);
+        if(UID.equals(FeedFragment.USER_UID)) {
+            collapsing_container.setTitle(FeedFragment.CURRENT_USER);
             Uri uri = currUser.getCurrentUser().getPhotoUrl();
             Picasso.with(MyUserHandleActivity.this).load(uri).into(icam);
         }
@@ -97,7 +97,7 @@ public class MyUserHandleActivity extends AppCompatActivity {
         icam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(UID.equals(MainActivity.USER_UID))
+                if(UID.equals(FeedFragment.USER_UID))
                     selectImage();
             }
         });

@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static com.example.vipul.speakyourmind.MainActivity.USER_UID;
+import static com.example.vipul.speakyourmind.FeedFragment.USER_UID;
 
 public class TakePhotoActivity extends AppCompatActivity {
     protected static List<String> photos;
@@ -78,7 +78,7 @@ public class TakePhotoActivity extends AppCompatActivity {
                 String key = dbRef.child(USER_UID).child("statusList").push().getKey();
                 StatusModel listModel = new StatusModel(key+" "+photos.size(),date, USER_UID);
                 StatusModel firebaseModel = new StatusModel(key+" "+photos.size(),date);
-                MainActivity.addToStatuses(listModel,firebaseModel);
+                FeedFragment.addToStatuses(listModel,firebaseModel);
                 dbRef.child(USER_UID).child("statusList").child(key).setValue(firebaseModel);
                 StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://speakyourmind-d0d3a.appspot.com");
                 for(int i=0;i<photos.size();i++){

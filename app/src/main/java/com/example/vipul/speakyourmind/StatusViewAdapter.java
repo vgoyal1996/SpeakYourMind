@@ -121,7 +121,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
         }
         holder.card_view.setBackgroundColor(Color.parseColor("#E3F2FD"));
         String date = WEEK_DAYS[c.get(Calendar.DAY_OF_WEEK)-1]+","+c.get(Calendar.DAY_OF_MONTH)+" "+MONTH_NAMES[c.get(Calendar.MONTH)]+" "+c.get(Calendar.YEAR);
-        if(!uid.equals(MainActivity.USER_UID)){
+        if(!uid.equals(FeedFragment.USER_UID)){
             holder.userText.setText(users.get(uid).getUserName());
         }
         else{
@@ -174,7 +174,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
             for (int i = 0; i < likeModelList.size(); i++) {
                 if (likeModelList.get(i).isLiked())
                     likeCount++;
-                if(likeModelList.get(i).getUserUid().equals(MainActivity.USER_UID))
+                if(likeModelList.get(i).getUserUid().equals(FeedFragment.USER_UID))
                     holder.likeButton.setLiked(true);
             }
         }
@@ -194,7 +194,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                 likeButton.setLiked(true);
                 LikeModel model = null;
                 for (int i = 0; i < likeModelList.size(); i++) {
-                    if (likeModelList.get(i).getUserUid().equals(MainActivity.USER_UID)) {
+                    if (likeModelList.get(i).getUserUid().equals(FeedFragment.USER_UID)) {
                         model = likeModelList.get(i);
                         model.setLiked(true);
                         likeModelList.set(i, model);
@@ -205,8 +205,8 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                     dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(model.getLikeUid()).child("liked").setValue(String.valueOf(model.isLiked()));
                 else {
                     String likeUid = dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").push().getKey();
-                    model = new LikeModel(MainActivity.USER_UID, true, likeUid);
-                    LikeModel modelForDb = new LikeModel(MainActivity.USER_UID, true);
+                    model = new LikeModel(FeedFragment.USER_UID, true, likeUid);
+                    LikeModel modelForDb = new LikeModel(FeedFragment.USER_UID, true);
                     dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(likeUid).setValue(modelForDb);
                     likeModelList.add(model);
                 }
@@ -217,7 +217,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                 likeButton.setLiked(false);
                 LikeModel model = null;
                 for (int i = 0; i < likeModelList.size(); i++) {
-                    if (likeModelList.get(i).getUserUid().equals(MainActivity.USER_UID)) {
+                    if (likeModelList.get(i).getUserUid().equals(FeedFragment.USER_UID)) {
                         model = likeModelList.get(i);
                         model.setLiked(false);
                         likeModelList.set(i, model);
@@ -225,7 +225,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                     }
                 }
                 //if (model != null)
-                dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(model.getLikeUid()).child("liked").setValue(String.valueOf(model.isLiked()));
+                dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").child(model.getLikeUid()).child("liked").setValue(model.isLiked());
                 /*else {
                     String likeUid = dbReference.child(uid + "/statusList/" + messageKeys.get(position).getMessageKey()).child("likes").push().getKey();
                     model = new LikeModel(MainActivity.USER_UID, true, likeUid);
@@ -304,7 +304,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                 String commentUid = dbReference.child(uid+"/statusList/"+messageKeys.get(position).getMessageKey()).child("comments").push().getKey();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                 String date = sdf.format(new Date());
-                CommentModel modelForApp = new CommentModel(MainActivity.DISPLAY_NAME,date,comment);
+                CommentModel modelForApp = new CommentModel(FeedFragment.DISPLAY_NAME,date,comment);
                 dbReference.child(uid+"/statusList/"+messageKeys.get(position).getMessageKey()).child("comments").child(commentUid).setValue(modelForApp);
                 List<CommentModel> commentModelList = statusModels.get(position).getCommentList();
                 if(commentModelList!=null) {

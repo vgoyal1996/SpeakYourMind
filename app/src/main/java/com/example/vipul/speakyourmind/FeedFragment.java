@@ -1,5 +1,7 @@
 package com.example.vipul.speakyourmind;
 
+
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,14 +11,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
@@ -26,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -43,7 +45,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+import static com.facebook.FacebookSdk.getApplicationContext;
+
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class FeedFragment extends Fragment {
     private FirebaseAuth auth;
     public static String USER_UID;
     public static String DISPLAY_NAME;
@@ -60,38 +68,45 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference reference;
     private List<MessageKeyModel> messageKeys;
 
+    public FeedFragment() {
+        // Required empty public constructor
+    }
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh_layout);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_feed, container, false);
+        swipeRefreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
                 swipeRefreshLayout.setRefreshing(true);
             }
-            }
-        );
+        });
         auth = FirebaseAuth.getInstance();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(getActivity().getApplication());
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.background);
         BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(),bmp);
         bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-        LinearLayout mainLayout = (LinearLayout)findViewById(R.id.main_linear_layout);
+        LinearLayout mainLayout = (LinearLayout)v.findViewById(R.id.main_linear_layout);
         mainLayout.setBackground(bitmapDrawable);
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.action_bar_layout);
-        myText = (TextView)findViewById(R.id.mytext);
+        //((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        //((AppCompatActivity)getActivity()).getSupportActionBar().setCustomView(R.layout.action_bar_layout);
+        //View sView = inflater.inflate(R.layout.action_bar_layout, container, false);
+        //myText = (TextView)sView.findViewById(R.id.mytext);
         USER_UID = auth.getCurrentUser().getUid();
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         reference = database.getReference();
-        statusView = (RecyclerView)findViewById(R.id.status_view);
-        sv= (SearchView) findViewById(R.id.msearch1);
+        statusView = (RecyclerView) v.findViewById(R.id.status_view);
+        sv= (SearchView)v.findViewById(R.id.msearch1);
         //search = (ImageView) findViewById(R.id.search);
-        updateStatusEditText = (EditText) findViewById(R.id.update_status_editText);
-        updateStatusEditText.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Aller_It.ttf"));
-        Button updateButton = (Button) findViewById(R.id.update_button_main);
-        ImageButton addPhotoButton = (ImageButton)findViewById(R.id.add_photos_status_button);
-        updateButton.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Aller_It.ttf"));
+        updateStatusEditText = (EditText)v.findViewById(R.id.update_status_editText);
+        updateStatusEditText.setTypeface(Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/Aller_It.ttf"));
+        Button updateButton = (Button)v.findViewById(R.id.update_button_main);
+        ImageButton addPhotoButton = (ImageButton)v.findViewById(R.id.add_photos_status_button);
+        updateButton.setTypeface(Typeface.createFromAsset(getApplicationContext().getAssets(),"fonts/Aller_It.ttf"));
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.setListener(new StatusViewAdapter.RecyclerViewItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Intent intent = new Intent(MainActivity.this,MyUserHandleActivity.class);
+                Intent intent = new Intent(getApplicationContext(),MyUserHandleActivity.class);
                 String clickedUid = statuses.get(position).getUid();
                 intent.putExtra(MyUserHandleActivity.USER,users.get(clickedUid));
                 startActivity(intent);
@@ -143,21 +158,21 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                finish();
-                startActivity(getIntent());
+                getActivity().finish();
+                startActivity(getActivity().getIntent());
             }
         });
         addPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, TakePhotoActivity.class));
-                overridePendingTransition(R.anim.dialog_in,0);
+                startActivity(new Intent(getApplicationContext(), TakePhotoActivity.class));
+                getActivity().overridePendingTransition(R.anim.dialog_in,0);
             }
         });
+        return v;
     }
 
-
-    class UpdateUITask extends AsyncTask<DataSnapshot,Void,List<StatusModel>>{
+    class UpdateUITask extends AsyncTask<DataSnapshot,Void,List<StatusModel>> {
 
         @Override
         protected void onPreExecute() {
@@ -221,21 +236,21 @@ public class MainActivity extends AppCompatActivity {
             CURRENT_USER = users.get(USER_UID).getUserName();
             //myText.setText(users.get(USER_UID).getUserName());
             DISPLAY_NAME = auth.getCurrentUser().getDisplayName();
-            myText.setText(DISPLAY_NAME);
+            //myText.setText(DISPLAY_NAME);
             adapter.setStatusModels(statusModels);
             adapter.setUsers(users);
             adapter.setMessageKeys(messageKeys);
-            LinearLayoutManager manager = new LinearLayoutManager(MainActivity.this);
+            LinearLayoutManager manager = new LinearLayoutManager(getApplicationContext());
             statusView.setLayoutManager(manager);
-            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this,R.anim.list_layout_controller);//R.anim.list_layout_controller
+            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(getApplicationContext(),R.anim.list_layout_controller);//R.anim.list_layout_controller
             statusView.setLayoutAnimation(controller);
             statusView.setAdapter(adapter);
         }
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.user_main,menu);
+        getActivity().getMenuInflater().inflate(R.menu.user_main,menu);
         return true;
     }
 
@@ -244,13 +259,13 @@ public class MainActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.sign_out_button:
                 auth.signOut();
-                startActivity(new Intent(MainActivity.this, LogInActivity.class));
-                finish();
+                startActivity(new Intent(getApplicationContext(), LogInActivity.class));
+                getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
 
     public void setTextStatus(String text){

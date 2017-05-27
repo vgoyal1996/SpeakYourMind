@@ -62,7 +62,7 @@ public class BlankFragment1 extends Fragment {
         updateButton.setTypeface(Typeface.createFromAsset(getActivity().getAssets(),"fonts/Aller_It.ttf"));
         Collections.sort(modelList,new StatusComparator());
         Collections.sort(messageList, new MessageKeyComparator());
-        final StatusViewAdapter adapter = new StatusViewAdapter(view.getContext(),modelList,MainActivity.users,messageList);
+        final StatusViewAdapter adapter = new StatusViewAdapter(view.getContext(),modelList,FeedFragment.users,messageList);
         userStatusView.setLayoutManager(new LinearLayoutManager(getContext()));
         userStatusView.setAdapter(adapter);
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference(UID);

@@ -79,6 +79,7 @@ public class LogInActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(LogInActivity.this,SignUpActivity.class));
+                //startActivity(new Intent(LogInActivity.this,DrawerActivity.class));
             }
         });
         logInButton.setOnClickListener(new View.OnClickListener() {
@@ -142,7 +143,8 @@ public class LogInActivity extends AppCompatActivity {
                         Toast.makeText(LogInActivity.this,"Wrong EmailId or password",Toast.LENGTH_SHORT).show();
                         break;
                     case 1:
-                        startActivity(new Intent(LogInActivity.this,MainActivity.class));
+                        //startActivity(new Intent(LogInActivity.this,MainActivity.class));
+                        startActivity(new Intent(LogInActivity.this,DrawerActivity.class));
                         finish();
                         break;
                     case 2:
