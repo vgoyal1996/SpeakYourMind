@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.fragment;
 
 
 import android.app.Fragment;
@@ -26,6 +26,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.vipul.speakyourmind.model.CommentModel;
+import com.example.vipul.speakyourmind.model.LikeModel;
+import com.example.vipul.speakyourmind.comparators.MessageKeyComparator;
+import com.example.vipul.speakyourmind.model.MessageKeyModel;
+import com.example.vipul.speakyourmind.activity.MyUserHandleActivity;
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.comparators.StatusComparator;
+import com.example.vipul.speakyourmind.model.StatusModel;
+import com.example.vipul.speakyourmind.adapters.StatusViewAdapter;
+import com.example.vipul.speakyourmind.activity.TakePhotoActivity;
+import com.example.vipul.speakyourmind.model.UserModel;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.firebase.client.DataSnapshot;

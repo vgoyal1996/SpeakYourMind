@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.other;
 
 
 import android.graphics.Bitmap;

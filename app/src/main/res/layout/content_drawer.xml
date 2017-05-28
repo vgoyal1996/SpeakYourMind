@@ -6,7 +6,7 @@
     android:id="@+id/content_frame"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.vipul.speakyourmind.DrawerActivity"
+    tools:context="com.example.vipul.speakyourmind.activity.DrawerActivity"
     tools:showIn="@layout/app_bar_drawer">
 
 </FrameLayout>

@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

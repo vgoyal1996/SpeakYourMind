@@ -1,4 +1,7 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.comparators;
+
+
+import com.example.vipul.speakyourmind.model.StatusModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -6,12 +9,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 
+public class StatusComparator implements Comparator<StatusModel> {
 
-public class MessageKeyComparator implements Comparator<MessageKeyModel> {
     @Override
-    public int compare(MessageKeyModel o1, MessageKeyModel o2) {
-        String ct1 = o1.getCreationDateAndTime();
-        String ct2 = o2.getCreationDateAndTime();
+    public int compare(StatusModel t1, StatusModel t2) {
+        String ct1 = t1.getCreationDateAndTime();
+        String ct2 = t2.getCreationDateAndTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Date d1 = null,d2 = null;
         try{

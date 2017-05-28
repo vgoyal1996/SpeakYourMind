@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.fragment;
 
 
 import android.graphics.Bitmap;
@@ -17,6 +17,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.vipul.speakyourmind.comparators.MessageKeyComparator;
+import com.example.vipul.speakyourmind.model.MessageKeyModel;
+import com.example.vipul.speakyourmind.activity.MyUserHandleActivity;
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.comparators.StatusComparator;
+import com.example.vipul.speakyourmind.model.StatusModel;
+import com.example.vipul.speakyourmind.adapters.StatusViewAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -26,7 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.example.vipul.speakyourmind.MyUserHandleActivity.UID;
+import static com.example.vipul.speakyourmind.activity.MyUserHandleActivity.UID;
 
 
 /**

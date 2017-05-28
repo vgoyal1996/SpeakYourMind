@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.activity;
 
 import android.app.AlertDialog;
 import android.content.CursorLoader;
@@ -26,6 +26,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.fragment.BlankFragment1;
+import com.example.vipul.speakyourmind.fragment.BlankFragment2;
+import com.example.vipul.speakyourmind.fragment.BlankFragment3;
+import com.example.vipul.speakyourmind.fragment.FeedFragment;
+import com.example.vipul.speakyourmind.model.StatusModel;
+import com.example.vipul.speakyourmind.model.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;

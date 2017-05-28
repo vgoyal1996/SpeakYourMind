@@ -1,9 +1,11 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.other;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
+
+import com.example.vipul.speakyourmind.R;
 
 
 public class BoundedRelativeLayout extends RelativeLayout {

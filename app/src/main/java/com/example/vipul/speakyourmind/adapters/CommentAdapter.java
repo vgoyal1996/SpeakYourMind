@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.adapters;
 
 
 import android.content.Context;
@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.model.CommentModel;
 
 import java.util.List;
 

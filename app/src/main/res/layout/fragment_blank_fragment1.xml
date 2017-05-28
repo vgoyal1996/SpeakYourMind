@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.vipul.speakyourmind.BlankFragment1">
+    tools:context="com.example.vipul.speakyourmind.fragment.BlankFragment1">
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

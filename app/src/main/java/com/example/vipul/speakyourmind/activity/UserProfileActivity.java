@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.activity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -27,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.other.CircleDrawable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -239,7 +241,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 imageInByte = bos.toByteArray();
                 CircleDrawable circle = new CircleDrawable(bm,true);
                 profilePic.setImageDrawable(circle);
-                //profilePic.setImageBitmap(getclip(bm));
             }
         }
     }

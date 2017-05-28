@@ -1,6 +1,9 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.other;
 import android.util.Log;
 import android.widget.Filter;
+
+import com.example.vipul.speakyourmind.adapters.StatusViewAdapter;
+import com.example.vipul.speakyourmind.model.StatusModel;
 
 import java.util.ArrayList;
 import java.util.List;

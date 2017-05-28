@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.activity;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.fragment.FeedFragment;
+import com.example.vipul.speakyourmind.model.StatusModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -39,7 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static com.example.vipul.speakyourmind.FeedFragment.USER_UID;
+import static com.example.vipul.speakyourmind.fragment.FeedFragment.USER_UID;
 
 public class TakePhotoActivity extends AppCompatActivity {
     protected static List<String> photos;

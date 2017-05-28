@@ -6,7 +6,7 @@
     android:background="#212F3D"
     android:baselineAligned="false"
     android:layout_height="match_parent"
-    tools:context=".LogInActivity">
+    tools:context=".activity.LogInActivity">
 
     <TextView
         android:layout_width="wrap_content"

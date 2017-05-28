@@ -1,9 +1,10 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.activity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,15 +15,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.fragment.FeedFragment;
+import com.example.vipul.speakyourmind.other.CircleTransformation;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.picasso.Picasso;
+
+import static com.example.vipul.speakyourmind.R.menu.drawer;
 
 public class DrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private int currentID=R.id.nav_feed;
+    private int currentID= R.id.nav_feed;
+    private FirebaseAuth auth;
+    private ImageView profilePic;
+    private TextView nameText;
+    private TextView emailText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +52,9 @@ public class DrawerActivity extends AppCompatActivity
         toggle.syncState();
 
         final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        profilePic = (ImageView)navigationView.getHeaderView(0).findViewById(R.id.imageView);
+        nameText = (TextView)navigationView.getHeaderView(0).findViewById(R.id.name_text);
+        emailText = (TextView)navigationView.getHeaderView(0).findViewById(R.id.textView);
         navigationView.setNavigationItemSelectedListener(this);
 
         if(savedInstanceState==null)
@@ -71,7 +86,7 @@ public class DrawerActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.drawer, menu);
+        getMenuInflater().inflate(drawer, menu);
         return true;
     }
 
@@ -117,7 +132,7 @@ public class DrawerActivity extends AppCompatActivity
         } else if (id == R.id.nav_chat) {
 
         } else if(id == R.id.nav_sign_out){
-            FirebaseAuth auth = FirebaseAuth.getInstance();
+            auth = FirebaseAuth.getInstance();
             auth.signOut();
             startActivity(new Intent(getApplicationContext(), LogInActivity.class));
             finish();
@@ -135,6 +150,12 @@ public class DrawerActivity extends AppCompatActivity
             TextView myText = (TextView)findViewById(R.id.mytext);
             FirebaseAuth auth = FirebaseAuth.getInstance();
             myText.setText("Welcome "+auth.getCurrentUser().getDisplayName());
+            Uri uri = auth.getCurrentUser().getPhotoUrl();
+            int width = profilePic.getDrawable().getIntrinsicWidth();
+            int height = profilePic.getDrawable().getIntrinsicHeight();
+            Picasso.with(DrawerActivity.this).load(uri).resize(width,height).centerCrop().transform(new CircleTransformation()).into(profilePic);
+            nameText.setText(auth.getCurrentUser().getDisplayName());
+            emailText.setText(auth.getCurrentUser().getEmail());
             //getSupportActionBar().setTitle("name");
         }
     }

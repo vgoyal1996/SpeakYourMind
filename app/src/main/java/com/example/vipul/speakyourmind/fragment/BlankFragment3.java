@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.fragment;
 
 
 import android.graphics.Bitmap;
@@ -12,6 +12,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.vipul.speakyourmind.comparators.MessageKeyComparator;
+import com.example.vipul.speakyourmind.model.MessageKeyModel;
+import com.example.vipul.speakyourmind.activity.MyUserHandleActivity;
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.comparators.StatusComparator;
+import com.example.vipul.speakyourmind.model.StatusModel;
+import com.example.vipul.speakyourmind.adapters.StatusViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.adapters;
 
 
 import android.content.Context;
@@ -22,6 +22,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.vipul.speakyourmind.other.CustomFilter;
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.fragment.FeedFragment;
+import com.example.vipul.speakyourmind.model.CommentModel;
+import com.example.vipul.speakyourmind.model.LikeModel;
+import com.example.vipul.speakyourmind.model.MessageKeyModel;
+import com.example.vipul.speakyourmind.model.StatusModel;
+import com.example.vipul.speakyourmind.model.UserModel;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;

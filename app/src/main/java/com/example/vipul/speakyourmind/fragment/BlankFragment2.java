@@ -1,4 +1,4 @@
-package com.example.vipul.speakyourmind;
+package com.example.vipul.speakyourmind.fragment;
 
 
 import android.graphics.Typeface;
@@ -9,6 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.vipul.speakyourmind.activity.MyUserHandleActivity;
+import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.model.UserModel;
 
 
 /**
