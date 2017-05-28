@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -56,6 +57,14 @@ public class DrawerActivity extends AppCompatActivity
         nameText = (TextView)navigationView.getHeaderView(0).findViewById(R.id.name_text);
         emailText = (TextView)navigationView.getHeaderView(0).findViewById(R.id.textView);
         navigationView.setNavigationItemSelectedListener(this);
+
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(DrawerActivity.this,PicturePopUpActivity.class));
+                overridePendingTransition(R.anim.profile_dialog_grow,0);
+            }
+        });
 
         if(savedInstanceState==null)
             selectFragment(R.id.nav_feed);

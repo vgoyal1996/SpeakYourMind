@@ -39,7 +39,9 @@
         <activity
             android:name=".activity.DrawerActivity"
             android:label="@string/title_activity_drawer"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.PicturePopUpActivity"
+            android:theme="@style/AppTheme.PopUpTheme"/>
     </application>
 
 </manifest>
