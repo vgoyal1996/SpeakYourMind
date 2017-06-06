@@ -22,10 +22,10 @@ import android.widget.TextView;
 import com.example.vipul.speakyourmind.R;
 import com.example.vipul.speakyourmind.fragment.FeedFragment;
 import com.example.vipul.speakyourmind.other.CircleTransformation;
+import com.example.vipul.speakyourmind.other.PicassoCache;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.firebase.auth.FirebaseAuth;
-import com.squareup.picasso.Picasso;
 
 import static com.example.vipul.speakyourmind.R.menu.drawer;
 
@@ -162,7 +162,7 @@ public class DrawerActivity extends AppCompatActivity
             Uri uri = auth.getCurrentUser().getPhotoUrl();
             int width = profilePic.getDrawable().getIntrinsicWidth();
             int height = profilePic.getDrawable().getIntrinsicHeight();
-            Picasso.with(DrawerActivity.this).load(uri).resize(width,height).centerCrop().transform(new CircleTransformation()).into(profilePic);
+            PicassoCache.getPicassoInstance(DrawerActivity.this).load(uri).resize(width,height).centerCrop().transform(new CircleTransformation()).into(profilePic);
             nameText.setText(auth.getCurrentUser().getDisplayName());
             emailText.setText(auth.getCurrentUser().getEmail());
             //getSupportActionBar().setTitle("name");

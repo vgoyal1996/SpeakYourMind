@@ -33,6 +33,7 @@ import com.example.vipul.speakyourmind.fragment.BlankFragment3;
 import com.example.vipul.speakyourmind.fragment.FeedFragment;
 import com.example.vipul.speakyourmind.model.StatusModel;
 import com.example.vipul.speakyourmind.model.UserModel;
+import com.example.vipul.speakyourmind.other.PicassoCache;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +41,6 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -82,7 +82,7 @@ public class MyUserHandleActivity extends AppCompatActivity {
         if(UID.equals(FeedFragment.USER_UID)) {
             collapsing_container.setTitle(FeedFragment.CURRENT_USER);
             Uri uri = currUser.getCurrentUser().getPhotoUrl();
-            Picasso.with(MyUserHandleActivity.this).load(uri).into(icam);
+            PicassoCache.getPicassoInstance(MyUserHandleActivity.this).load(uri).into(icam);
         }
         else {
             collapsing_container.setTitle(userModel.getUserName());
@@ -90,7 +90,7 @@ public class MyUserHandleActivity extends AppCompatActivity {
             ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    Picasso.with(MyUserHandleActivity.this).load(uri).into(icam);
+                    PicassoCache.getPicassoInstance(MyUserHandleActivity.this).load(uri).into(icam);
                 }
             });
         }

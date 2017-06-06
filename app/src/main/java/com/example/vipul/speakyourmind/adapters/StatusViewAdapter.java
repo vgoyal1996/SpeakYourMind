@@ -20,16 +20,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.vipul.speakyourmind.other.CustomFilter;
 import com.example.vipul.speakyourmind.R;
 import com.example.vipul.speakyourmind.fragment.FeedFragment;
 import com.example.vipul.speakyourmind.model.CommentModel;
+import com.example.vipul.speakyourmind.model.GalleryModel;
 import com.example.vipul.speakyourmind.model.LikeModel;
 import com.example.vipul.speakyourmind.model.MessageKeyModel;
 import com.example.vipul.speakyourmind.model.StatusModel;
 import com.example.vipul.speakyourmind.model.UserModel;
+import com.example.vipul.speakyourmind.other.CustomFilter;
+import com.example.vipul.speakyourmind.other.PicassoCache;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -37,13 +38,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
-import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
     private CustomFilter filter;
     private StorageReference reference;
     private CommentAdapter adapter;
+    public static HashMap<String,GalleryModel> galleryModelHashMap = new HashMap<>();
     private static final String[] MONTH_NAMES = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     private static final String[] WEEK_DAYS = {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
 
@@ -147,16 +149,19 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
             String parts[] = msg.split(" ");
             reference = FirebaseStorage.getInstance().getReference();
             int size = Integer.parseInt(parts[1]);
+            int startID = 0;
             for(int i=0;i<size;i++){
                 StorageReference storageRef = reference.child(uid+"/"+parts[0]+"/photo"+i+".png/");
                 final ImageView imageView = new ImageView(context);
-                imageView.setId(i);
+                imageView.setId(View.generateViewId());
+                if(i==0)
+                    startID=imageView.getId();
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(220, 220);
                 params.setMargins(10,10,10,10);
                 storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Picasso.with(context).load(uri).into(imageView);
+                        PicassoCache.getPicassoInstance(context).load(uri).into(imageView);
                     }
                 });
                 imageView.setLayoutParams(params);
@@ -165,10 +170,29 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(context,v.getId(),Toast.LENGTH_SHORT).show();
+                        /*Intent intent = new Intent(context,GalleryPopUpActivity.class);
+                        //TODO pass values in intent to GalleryPopUpActivity
+                         Drawable id = imageView.getDrawable();
+                        GalleryModel m = null;
+                        for(Map.Entry<String,GalleryModel> map : galleryModelHashMap.entrySet()){
+                            m = map.getValue();
+                            if(m.getStartingID()<=id) {
+                                m.setClickedID(id);
+                                break;
+                            }
+                        }
+                        intent.putExtra(GalleryPopUpActivity.CLICKED_ID,m.getClickedID());
+                        intent.putExtra(GalleryPopUpActivity.NUMBER_OF_IMAGES,m.getGallerySize());
+                        intent.putExtra(GalleryPopUpActivity.STARTING_ID,m.getStartingID());
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);*/
+                        //Activity activity = (Activity) context;
+                        //activity.overridePendingTransition(R.anim.profile_dialog_grow,0);
                     }
                 });
             }
+            GalleryModel galleryModel = new GalleryModel(startID,-1,size);
+            galleryModelHashMap.put(parts[0],galleryModel);
             holder.statusText.setVisibility(View.INVISIBLE);
             holder.statusText.setEnabled(false);
         }

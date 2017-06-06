@@ -1,6 +1,5 @@
 package com.example.vipul.speakyourmind.activity;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -8,24 +7,26 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.example.vipul.speakyourmind.R;
-import com.example.vipul.speakyourmind.other.CircleTransformation;
-import com.example.vipul.speakyourmind.other.PicassoCache;
-import com.google.firebase.auth.FirebaseAuth;
 
-public class PicturePopUpActivity extends AppCompatActivity {
+public class GalleryPopUpActivity extends AppCompatActivity {
+    public static final String NUMBER_OF_IMAGES="images";
+    public static final String STARTING_ID="start";
+    public static final String CLICKED_ID="clicked";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_picture_pop_up);
+        setContentView(R.layout.activity_gallery_pop_up);
 
+        int nImages = (int)getIntent().getExtras().get(NUMBER_OF_IMAGES);
+        int startID = (int)getIntent().getExtras().get(STARTING_ID);
+        int clickedID = (int)getIntent().getExtras().get(CLICKED_ID);
         ImageView profileDisplay = (ImageView)findViewById(R.id.profile_display);
         RelativeLayout layout = (RelativeLayout)findViewById(R.id.pop_up_layout);
         layout.getBackground().setAlpha(180);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        Uri uri = auth.getCurrentUser().getPhotoUrl();
-        PicassoCache.getPicassoInstance(PicturePopUpActivity.this).load(uri).transform(new CircleTransformation()).into(profileDisplay);
-
+        //FirebaseAuth auth = FirebaseAuth.getInstance();
+        //Uri uri = auth.getCurrentUser().getPhotoUrl();
+        profileDisplay.setImageResource(clickedID);
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
