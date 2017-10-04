@@ -195,6 +195,8 @@ public class FeedFragment extends Fragment {
             messageKeys = new ArrayList<>();
             Iterable<DataSnapshot> uids = dataSnapshots[0].getChildren();
             for(DataSnapshot child : uids){
+                if(child.getKey().equals("Messages"))
+                    continue;
                 HashMap<String,String> values = (HashMap<String,String>)child.getValue();
                 UserModel user = new UserModel(child.getKey(),values.get("userName"),values.get("email"),values.get("password"),values.get("phone"));
                 List<StatusModel> userStatuses = new ArrayList<>();

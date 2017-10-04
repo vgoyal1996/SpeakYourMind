@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.vipul.speakyourmind.R;
+import com.example.vipul.speakyourmind.fragment.ChatFragment;
 import com.example.vipul.speakyourmind.fragment.FeedFragment;
 import com.example.vipul.speakyourmind.other.CircleTransformation;
 import com.example.vipul.speakyourmind.other.PicassoCache;
@@ -30,7 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import static com.example.vipul.speakyourmind.R.menu.drawer;
 
 public class DrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,ChatFragment.OnListFragmentInteractionListener {
     private int currentID= R.id.nav_feed;
     private FirebaseAuth auth;
     private ImageView profilePic;
@@ -139,7 +140,12 @@ public class DrawerActivity extends AppCompatActivity
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             ft.commit();
         } else if (id == R.id.nav_chat) {
-
+            Fragment fragment = new ChatFragment();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.content_frame,fragment,"visible_fragment");
+            ft.addToBackStack(null);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            ft.commit();
         } else if(id == R.id.nav_sign_out){
             auth = FirebaseAuth.getInstance();
             auth.signOut();
@@ -169,4 +175,8 @@ public class DrawerActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onListFragmentInteraction(String item) {
+        //Toast.makeText(this,item,Toast.LENGTH_LONG).show();
+    }
 }

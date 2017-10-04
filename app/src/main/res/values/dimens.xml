@@ -10,4 +10,5 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="profile_width">75dp</dimen>
     <dimen name="profile_height">75dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>
