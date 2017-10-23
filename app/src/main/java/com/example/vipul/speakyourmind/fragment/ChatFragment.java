@@ -2,17 +2,22 @@ package com.example.vipul.speakyourmind.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.vipul.speakyourmind.R;
 import com.example.vipul.speakyourmind.adapters.ChatViewAdapter;
+import com.example.vipul.speakyourmind.other.SimpleDividerItemDecoration;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -54,6 +59,11 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_chat_list, container, false);
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.background);
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(),bmp);
+        bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        LinearLayout layout = (LinearLayout)view.findViewById(R.id.chat_layout);
+        layout.setBackground(bitmapDrawable);
         Firebase ref = new Firebase("https://speakyourmind-d0d3a.firebaseio.com/");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -82,7 +92,7 @@ public class ChatFragment extends Fragment {
             ArrayList<String> person_ids = new ArrayList<>();
             for(DataSnapshot child : uids){
                 HashMap<String, String> values = (HashMap<String, String>) child.getValue();
-                if(child.getKey().equals("Messages"))
+                if(child.getKey().equals("Messages")||child.getKey().equals("notifications"))
                     continue;
                 if(!child.getKey().equals(FeedFragment.USER_UID)) {
                     personIds.put(child.getKey(), values.get("userName"));
@@ -96,16 +106,12 @@ public class ChatFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<String> persons) {
             super.onPostExecute(persons);
-            if (view instanceof RecyclerView) {
-                Context context = view.getContext();
-                RecyclerView recyclerView = (RecyclerView) view;
-                if (mColumnCount <= 1) {
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                } else {
-                    recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-                }
-                recyclerView.setAdapter(new ChatViewAdapter(getActivity().getApplicationContext(),persons,personProfilePic, mListener));
-            }
+            Context context = view.getContext();
+            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(context);
+            recyclerView.addItemDecoration(new SimpleDividerItemDecoration(context));
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setAdapter(new ChatViewAdapter(getActivity().getApplicationContext(),persons,personProfilePic, mListener));
         }
     }
 

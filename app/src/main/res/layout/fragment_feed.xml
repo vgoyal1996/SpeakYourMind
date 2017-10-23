@@ -50,6 +50,7 @@
             android:text="update"
             android:background="@drawable/button_borders"
             android:layout_weight="1"
+            android:textColor="#ffffff"
             android:id="@+id/update_button_main"/>
         <ImageButton
             android:layout_width="0dp"

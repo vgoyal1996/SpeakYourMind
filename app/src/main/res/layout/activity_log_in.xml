@@ -30,7 +30,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="user Email"
+            android:hint="Email"
             android:textSize="30sp"
             android:background="@drawable/background_edit_text"
             android:drawableStart="@drawable/ic_email_white_18dp"
@@ -44,7 +44,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="password"
+            android:hint="Password"
             android:layout_marginTop="5dp"
             android:textSize="30sp"
             android:drawableStart="@drawable/ic_lock_white_18dp"
@@ -70,6 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:text="Log In"
+        android:textColor="#ffffff"
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
         android:background="@drawable/button_borders"

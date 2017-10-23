@@ -3,10 +3,8 @@ package com.example.vipul.speakyourmind.activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -43,6 +41,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class UserProfileActivity extends AppCompatActivity {
     private EditText profileEditText;
@@ -135,6 +134,9 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
             }
+            else{
+                handler.sendEmptyMessage(1);
+            }
         }
 
         private Handler handler = new Handler() {
@@ -215,7 +217,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 imageInByte = bytes.toByteArray();
 
             } else if (requestCode == SELECT_FILE) {
-                Uri selectedImageUri = data.getData();
+                /*Uri selectedImageUri = data.getData();
                 String[] projection = {MediaStore.MediaColumns.DATA};
                 CursorLoader cursorLoader = new CursorLoader(this, selectedImageUri, projection, null, null,
                         null);
@@ -227,7 +229,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 Bitmap bm;
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(selectedImagePath, options);
+                //BitmapFactory.decodeFile(selectedImagePath, options);
                 final int REQUIRED_SIZE = 200;
                 int scale = 1;
                 while (options.outWidth / scale / 2 >= REQUIRED_SIZE
@@ -236,6 +238,17 @@ public class UserProfileActivity extends AppCompatActivity {
                 options.inSampleSize = scale;
                 options.inJustDecodeBounds = false;
                 bm = BitmapFactory.decodeFile(selectedImagePath, options);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                imageInByte = bos.toByteArray();*/
+                final Uri imageUri = data.getData();
+                InputStream imageStream = null;
+                try {
+                    imageStream = getContentResolver().openInputStream(imageUri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                final Bitmap bm = BitmapFactory.decodeStream(imageStream);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 bm.compress(Bitmap.CompressFormat.PNG, 100, bos);
                 imageInByte = bos.toByteArray();

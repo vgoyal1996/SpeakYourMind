@@ -1,8 +1,11 @@
 package com.example.vipul.speakyourmind.activity;
 
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -42,11 +45,15 @@ public class ChatActivity extends AppCompatActivity {
     //ArrayList<ChatModel> conversation = new ArrayList<>();
     Set<ChatModel> conversations = new TreeSet<>(new ChatComparator());
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+    private SharedPreferences prefs;
+    private User senderUser;
+    private User receiverUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mChatView = (ChatView)findViewById(R.id.chat_view);
         recipient_id = (String)getIntent().getExtras().get(PERSON_POS);
         sender_id = FeedFragment.USER_UID;
@@ -54,6 +61,8 @@ public class ChatActivity extends AppCompatActivity {
         mChatView.setSendButtonColor(Color.parseColor("#E74C3C"));
         mChatView.setDateSeparatorColor(Color.parseColor("#17202A"));
         mChatView.setSendTimeTextColor(Color.parseColor("#17202A"));
+        senderUser = new User(0, ChatFragment.personIds.get(sender_id), BitmapFactory.decodeResource(getResources(), R.drawable.face_2));
+        receiverUser = new User(1, ChatFragment.personIds.get(recipient_id), BitmapFactory.decodeResource(getResources(), R.drawable.face_1));
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.action_bar_layout);
@@ -65,51 +74,7 @@ public class ChatActivity extends AppCompatActivity {
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(f==0) {
-                    Iterable<DataSnapshot> results = dataSnapshot.getChildren();
-                    for (DataSnapshot snapshot : results) {
-                        HashMap<String, String> hm = (HashMap<String, String>) snapshot.getValue();
-                        if ((hm.get("receiverId").equals(recipient_id) && hm.get("senderId").equals(sender_id)) || (hm.get("receiverId").equals(sender_id) && hm.get("senderId").equals(recipient_id))) {
-                            ChatModel model = new ChatModel(hm.get("senderId"), hm.get("receiverId"), hm.get("message"), hm.get("timestamp"));
-                            //conversation.add(model);
-                            conversations.add(model);
-                        }
-                    }
-                    //Collections.sort(conversation, new ChatComparator());
-                    for (ChatModel model : conversations) {
-                        Message chatMsg;
-                        Date date = null;
-                        try {
-                            date = sdf.parse(model.getTimestamp());
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(date);
-                        if (model.getSenderId().equals(sender_id)) {
-                            chatMsg = new Message.Builder()
-                                    .setUser(new User(0, ChatFragment.personIds.get(model.getSenderId()), BitmapFactory.decodeResource(getResources(), R.drawable.face_2)))
-                                    .setRightMessage(true)
-                                    .setCreatedAt(cal)
-                                    .hideIcon(true)
-                                    .setUsernameVisibility(false)
-                                    .setMessageText(model.getMessage())
-                                    .build();
-                            mChatView.send(chatMsg);
-                        } else {
-                            chatMsg = new Message.Builder()
-                                    .setUser(new User(1, ChatFragment.personIds.get(model.getSenderId()), BitmapFactory.decodeResource(getResources(), R.drawable.face_1)))
-                                    .setRightMessage(false)
-                                    .setCreatedAt(cal)
-                                    .hideIcon(true)
-                                    .setUsernameVisibility(false)
-                                    .setMessageText(model.getMessage())
-                                    .build();
-                            mChatView.receive(chatMsg);
-                        }
-                    }
-                    f = 1;
-                }
+                new LoadChatTask().execute(dataSnapshot);
             }
 
             @Override
@@ -136,7 +101,7 @@ public class ChatActivity extends AppCompatActivity {
                             Calendar cal = Calendar.getInstance();
                             cal.setTime(date);
                             Message message = new Message.Builder()
-                                    .setUser(new User(1, ChatFragment.personIds.get(recipient_id), BitmapFactory.decodeResource(getResources(), R.drawable.face_1)))
+                                    .setUser(receiverUser)
                                     .setRightMessage(false)
                                     .setUsernameVisibility(false)
                                     .hideIcon(true)
@@ -180,10 +145,11 @@ public class ChatActivity extends AppCompatActivity {
                 ChatModel m = new ChatModel(sender_id,recipient_id,mChatView.getInputText(),date);
                 String key = reference.push().getKey();
                 reference.child(key).setValue(m);
+                database.getReference().child("notifications").push().setValue(m);
                 //conversation.add(m);
                 conversations.add(m);
                 Message message = new Message.Builder()
-                        .setUser(new User(0,ChatFragment.personIds.get(sender_id),BitmapFactory.decodeResource(getResources(), R.drawable.face_2)))
+                        .setUser(senderUser)
                         .setRightMessage(true)
                         .setUsernameVisibility(false)
                         .hideIcon(true)
@@ -198,4 +164,84 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences.Editor prefEditor = prefs.edit();
+        prefEditor.putBoolean("isInForeground",false);
+        prefEditor.putString("receiverID","-1");
+        prefEditor.apply();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences.Editor prefEditor = prefs.edit();
+        prefEditor.putBoolean("isInForeground",true);
+        prefEditor.putString("receiverID",sender_id);
+        prefEditor.apply();
+    }
+
+
+    private class LoadChatTask extends AsyncTask<DataSnapshot,Void,Void>{
+
+        @Override
+        protected Void doInBackground(DataSnapshot... params) {
+            if(f==0) {
+                DataSnapshot dataSnapshot = params[0];
+                Iterable<DataSnapshot> results = dataSnapshot.getChildren();
+                for (DataSnapshot snapshot : results) {
+                    HashMap<String, String> hm = (HashMap<String, String>) snapshot.getValue();
+                    if ((hm.get("receiverId").equals(recipient_id) && hm.get("senderId").equals(sender_id)) || (hm.get("receiverId").equals(sender_id) && hm.get("senderId").equals(recipient_id))) {
+                        ChatModel model = new ChatModel(hm.get("senderId"), hm.get("receiverId"), hm.get("message"), hm.get("timestamp"));
+                        //conversation.add(model);
+                        conversations.add(model);
+                    }
+                }
+                //Collections.sort(conversation, new ChatComparator());
+                f = 1;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            for (ChatModel model : conversations) {
+                Message chatMsg;
+                Date date = null;
+                try {
+                    date = sdf.parse(model.getTimestamp());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(date);
+                if (model.getSenderId().equals(sender_id)) {
+                    chatMsg = new Message.Builder()
+                            .setUser(senderUser)
+                            .setRightMessage(true)
+                            .setCreatedAt(cal)
+                            .hideIcon(true)
+                            .setUsernameVisibility(false)
+                            .setMessageText(model.getMessage())
+                            .build();
+                    mChatView.send(chatMsg);
+                } else {
+                    chatMsg = new Message.Builder()
+                            .setUser(receiverUser)
+                            .setRightMessage(false)
+                            .setCreatedAt(cal)
+                            .hideIcon(true)
+                            .setUsernameVisibility(false)
+                            .setMessageText(model.getMessage())
+                            .build();
+                    mChatView.receive(chatMsg);
+                }
+            }
+        }
+    }
+
 }
