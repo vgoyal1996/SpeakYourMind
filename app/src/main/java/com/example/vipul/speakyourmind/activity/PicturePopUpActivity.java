@@ -10,22 +10,40 @@ import android.widget.RelativeLayout;
 import com.example.vipul.speakyourmind.R;
 import com.example.vipul.speakyourmind.other.CircleTransformation;
 import com.example.vipul.speakyourmind.other.PicassoCache;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class PicturePopUpActivity extends AppCompatActivity {
+    public static final String POP_UP_FLAG = "flag";
+    private int flag;
+    public static final String POP_UP_PICTURE = "picture";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picture_pop_up);
 
-        ImageView profileDisplay = (ImageView)findViewById(R.id.profile_display);
+        flag = (int) getIntent().getExtras().get(POP_UP_FLAG);
+        final ImageView profileDisplay = (ImageView)findViewById(R.id.profile_display);
         RelativeLayout layout = (RelativeLayout)findViewById(R.id.pop_up_layout);
         layout.getBackground().setAlpha(180);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        Uri uri = auth.getCurrentUser().getPhotoUrl();
-        PicassoCache.getPicassoInstance(PicturePopUpActivity.this).load(uri).transform(new CircleTransformation()).into(profileDisplay);
-
+        if(flag==0) {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            Uri uri = auth.getCurrentUser().getPhotoUrl();
+            PicassoCache.getPicassoInstance(PicturePopUpActivity.this).load(uri).transform(new CircleTransformation()).into(profileDisplay);
+        }
+        else{
+            String picture = (String)getIntent().getExtras().get(POP_UP_PICTURE);
+            StorageReference ref = FirebaseStorage.getInstance().getReference().child(picture);
+            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    PicassoCache.getPicassoInstance(PicturePopUpActivity.this).load(uri).transform(new CircleTransformation()).into(profileDisplay);
+                }
+            });
+        }
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
@@ -37,6 +55,7 @@ public class PicturePopUpActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(0,R.anim.profile_dialog_shrink);
+        if(flag==0)
+            overridePendingTransition(0,R.anim.profile_dialog_shrink);
     }
 }

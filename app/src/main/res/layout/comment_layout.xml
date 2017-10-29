@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
     android:padding="10dp"
-    rv:rv_backgroundColor="#009688"
+    rv:rv_backgroundColor="#6A8A82"
     rv:rv_cornerRadius="10dp">
 
     <LinearLayout

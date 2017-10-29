@@ -62,7 +62,9 @@ public class DrawerActivity extends AppCompatActivity
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(DrawerActivity.this,PicturePopUpActivity.class));
+                Intent popupIntent = new Intent(DrawerActivity.this,PicturePopUpActivity.class);
+                popupIntent.putExtra(PicturePopUpActivity.POP_UP_FLAG,0);
+                startActivity(popupIntent);
                 overridePendingTransition(R.anim.profile_dialog_grow,0);
             }
         });
@@ -89,7 +91,8 @@ public class DrawerActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            //super.onBackPressed();
+            finish();
         }
     }
 

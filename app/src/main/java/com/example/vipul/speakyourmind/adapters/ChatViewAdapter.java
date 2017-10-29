@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.vipul.speakyourmind.R;
 import com.example.vipul.speakyourmind.activity.ChatActivity;
+import com.example.vipul.speakyourmind.activity.PicturePopUpActivity;
 import com.example.vipul.speakyourmind.fragment.ChatFragment;
 import com.example.vipul.speakyourmind.fragment.ChatFragment.OnListFragmentInteractionListener;
 import com.example.vipul.speakyourmind.other.CircleTransformation;
@@ -72,6 +73,17 @@ public class ChatViewAdapter extends RecyclerView.Adapter<ChatViewAdapter.ViewHo
                 intent.putExtra(ChatActivity.PERSON_POS,mValues.get(position));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
+            }
+        });
+        holder.mProfilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Activity a = (Activity) context;
+                Intent popupIntent = new Intent(context,PicturePopUpActivity.class);
+                popupIntent.putExtra(PicturePopUpActivity.POP_UP_FLAG,1);
+                popupIntent.putExtra(PicturePopUpActivity.POP_UP_PICTURE,profilePic.get(mValues.get(position)));
+                context.startActivity(popupIntent);
+                //.overridePendingTransition(R.anim.profile_dialog_grow,0);
             }
         });
     }

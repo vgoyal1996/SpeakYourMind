@@ -18,7 +18,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.vipul.speakyourmind.R;
@@ -129,15 +128,17 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
         }catch (ParseException e){
             e.printStackTrace();
         }
-        holder.card_view.setBackgroundColor(Color.parseColor("#E3F2FD"));
+        holder.card_view.setCardBackgroundColor(Color.parseColor("#FDEDEC"));
+        //holder.card_view.setCardElevation(10);
+        //holder.card_view.setRadius(20);
         String date = WEEK_DAYS[c.get(Calendar.DAY_OF_WEEK)-1]+","+c.get(Calendar.DAY_OF_MONTH)+" "+MONTH_NAMES[c.get(Calendar.MONTH)]+" "+c.get(Calendar.YEAR);
         if(!uid.equals(FeedFragment.USER_UID)){
             holder.userText.setText(users.get(uid).getUserName());
         }
         else{
             holder.userText.setText("You");
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)holder.card_view.getLayoutParams();
-            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            //RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)holder.card_view.getLayoutParams();
+            //params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         }
         holder.date_time.setText("posted on "+date);
         String msg = statusModels.get(position).getMessage();
@@ -367,12 +368,12 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
 
     public static class StatusViewHolder extends RecyclerView.ViewHolder{
         private View view;
-        private RelativeLayout mainLayout;
+        //private RelativeLayout mainLayout;
         private LinearLayout photoLinearLayout;
         private TextView statusText,userText,date_time;
         private CardView card_view;
         private LikeButton likeButton;
-        private Button commentButton;
+        private TextView commentButton;
         private RecyclerView commentView;
         private LinearLayout commentLayout;
         private EditText writeCommentEditText;
@@ -381,14 +382,14 @@ public class StatusViewAdapter extends RecyclerView.Adapter<StatusViewAdapter.St
         public StatusViewHolder(View itemView) {
             super(itemView);
             view = itemView;
-            mainLayout = (RelativeLayout)view.findViewById(R.id.relative_card);
+            //mainLayout = (RelativeLayout)view.findViewById(R.id.relative_card);
             photoLinearLayout = (LinearLayout)view.findViewById(R.id.photo_linear_layout);
             statusText = (TextView)view.findViewById(R.id.status_text);
             userText = (TextView)view.findViewById(R.id.user_name);
             card_view = (CardView) view.findViewById(R.id.card_view);
             date_time = (TextView) view.findViewById(R.id.date_time);
             likeButton = (LikeButton) view.findViewById(R.id.like_button);
-            commentButton = (Button) view.findViewById(R.id.comment_button);
+            commentButton = (TextView) view.findViewById(R.id.comment_textView);
             commentView = (RecyclerView)view.findViewById(R.id.comment_recycler_view);
             commentLayout = (LinearLayout)view.findViewById(R.id.comment_layout);
             writeCommentEditText = (EditText)view.findViewById(R.id.write_comment_editText);
