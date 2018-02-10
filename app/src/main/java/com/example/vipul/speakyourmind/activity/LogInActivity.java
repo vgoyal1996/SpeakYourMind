@@ -3,17 +3,22 @@ package com.example.vipul.speakyourmind.activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.LightingColorFilter;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -25,16 +30,22 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class LogInActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private ProgressDialog pd;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
         auth = FirebaseAuth.getInstance();
-        final EditText emailText = (EditText)findViewById(R.id.login_email);
+        final AutoCompleteTextView emailText = (AutoCompleteTextView) findViewById(R.id.login_email);
         emailText.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Aller_It.ttf"));
         final EditText passwordText = (EditText)findViewById(R.id.login_password);
         passwordText.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Aller_It.ttf"));
@@ -52,6 +63,13 @@ public class LogInActivity extends AppCompatActivity {
         actionBar.setCustomView(R.layout.action_bar_layout);
         TextView myText = (TextView)findViewById(R.id.mytext);
         myText.setText("LOGIN");
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Set<String> autoSet = prefs.getStringSet("auto_complete_set",null);
+        if(autoSet!=null){
+            List<String> autoList = new ArrayList<>(autoSet);
+            ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,autoList);
+            emailText.setAdapter(autoCompleteAdapter);
+        }
         forgotPasswordText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,6 +105,15 @@ public class LogInActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String email = emailText.getText().toString().trim();
+                if(prefs==null)
+                    prefs = PreferenceManager.getDefaultSharedPreferences(LogInActivity.this);
+                SharedPreferences.Editor editor = prefs.edit();
+                Set<String> set = prefs.getStringSet("auto_complete_set",null);
+                if(set==null)
+                    set = new HashSet<>();
+                set.add(email);
+                editor.putStringSet("auto_complete_set",set);
+                editor.apply();
                 String password = passwordText.getText().toString().trim();
                 pd = ProgressDialog.show(LogInActivity.this,"Logging In","Please wait...",true,false);
                 Thread t = new Thread(new LogInThread(LogInActivity.this,email,password));
